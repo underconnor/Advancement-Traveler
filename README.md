@@ -1,13 +1,25 @@
-# Paper Developemnt Sample Plugin
+# Advancement-Traveler
 
-## Environment
+Large-scale Viewer-participating Content Plugin for [komq](https://youtube.com/코마).
 
-- [Paper 1.17.1](https://papermc.io/downloads) dependencies
-- [Tap](https://github.com/monun/tap) dependencies
-- [Kommand](https://github.com/monun/kommand/) dependencies
-- [Server Script](https://github.com/monun/server-script) / Using [aroxu's GoLang version](https://github.com/aroxu/server-script/)
+## Build
 
-### This Project Requires:
+`./gradlew clean dist`
 
-- [JDK 16](https://docs.aws.amazon.com/corretto/latest/corretto-16-ug/downloads-list.html) (Corretto OpenJDK is Recommended.)
-- libarchive-tools package (on Linux, for [./server-script.sh](./server-script.sh))
+---
+
+## Releases
+
+**[[Releases](https://github.com/qogusdn1017/Advancement-Traveler/releases)]**
+
+---
+
+## Licenses
+
+**[[GNU General Public License v3.0](./LICENSE.md)]**
+
+---
+
+### Info Markdown
+
+**[[INFO.md](./Info.md)]**

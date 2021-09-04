@@ -14,29 +14,26 @@
  * limitations under the License.
  */
 
-package com.baehyeonwoo.sample
+package com.baehyeonwoo.advctravel
 
-import io.github.monun.kommand.kommand
-import net.kyori.adventure.text.Component.text
-import org.bukkit.plugin.Plugin
+import org.bukkit.plugin.java.JavaPlugin
 
 /***
  * @author BaeHyeonWoo
  */
 
-object SampleKommand {
-    private fun getInstance(): Plugin {
-        return SamplePluginMain.instance
+class AdvcTravelMain : JavaPlugin() {
+
+    companion object {
+        lateinit var instance: AdvcTravelMain
+            private set
     }
-    
-    fun sampleKommand() {
-        getInstance().kommand {
-            register("sample") {
-                requires { playerOrNull != null && isOp }
-                executes {
-                    sender.sendMessage(text("Hello World!"))
-                }
-            }
-        }
+
+    override fun onEnable() {
+        instance = this
+        saveDefaultConfig()
+        server.maxPlayers = config.getInt("max-players")
+        server.pluginManager.registerEvents(AdvcTravelEvent(), this)
+        AdvcTravelKommand.advcTravelKommand()
     }
 }
