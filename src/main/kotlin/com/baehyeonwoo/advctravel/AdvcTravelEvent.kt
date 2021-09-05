@@ -16,6 +16,7 @@
 
 package com.baehyeonwoo.advctravel
 
+import com.baehyeonwoo.advctravel.utils.getOnlinePlayers
 import com.destroystokyo.paper.event.server.PaperServerListPingEvent
 import io.papermc.paper.event.player.AsyncChatEvent
 import net.kyori.adventure.text.Component.text
@@ -149,14 +150,7 @@ class AdvcTravelEvent : Listener {
             }
         }
         else {
-
-            var numplayers = 0
-            for(p in server.onlinePlayers) {
-                if(!administrator.contains(p.uniqueId.toString())) {
-                    numplayers += 1
-                }
-            }
-            if(numplayers >= config.getInt("max-players")) {
+            if(getOnlinePlayers().getOnlinePlayers() >= config.getInt("max-players")) {
                 e.disallow(Result.KICK_FULL, "서버가 꽉 찼습니다. §l넌 못 지나간다.") // Deprecated 먹었지만 해결 방법 없어서 패스
             }
 
@@ -183,10 +177,8 @@ class AdvcTravelEvent : Listener {
         val p = e.player
         val item = e.item.itemStack
 
-        if (item.type == Material.DRAGON_EGG) {
-            if (!runner.contains(p.uniqueId.toString())) {
-                e.isCancelled = true
-            }
+        if (item.type == Material.DRAGON_EGG && !runner.contains(p.uniqueId.toString())) {
+            e.isCancelled = true
         }
     }
 
@@ -194,12 +186,6 @@ class AdvcTravelEvent : Listener {
     fun onPaperServerListPing(e: PaperServerListPingEvent) {
         e.motd(text("ADVANCEMENT TRAVELER", NamedTextColor.RED, TextDecoration.BOLD))
         e.maxPlayers = config.getInt("max-players")
-        var numplayers = 0
-        for(p in server.onlinePlayers) {
-            if(!administrator.contains(p.uniqueId.toString())) {
-                numplayers += 1
-            }
-        }
-        e.numPlayers = numplayers
+        e.numPlayers = getOnlinePlayers().getOnlinePlayers()
     }
 }
