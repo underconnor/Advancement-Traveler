@@ -17,6 +17,7 @@
 package com.baehyeonwoo.advctravel
 
 import com.baehyeonwoo.advctravel.Listeners.FirstJoinEvent
+import com.baehyeonwoo.advctravel.Listeners.RespawnEvent
 import org.bukkit.plugin.java.JavaPlugin
 
 /***
@@ -37,6 +38,7 @@ class AdvcTravelMain : JavaPlugin() {
 //        server.maxPlayers = config.getInt("max-players")
         server.pluginManager.registerEvents(AdvcTravelEvent(), this)
         server.pluginManager.registerEvents(FirstJoinEvent(), this)
+        server.pluginManager.registerEvents(RespawnEvent(), this)
         AdvcTravelKommand.advcTravelKommand()
     }
 }

@@ -2,28 +2,27 @@ package com.baehyeonwoo.advctravel.Listeners
 
 import com.baehyeonwoo.advctravel.AdvcTravelMain
 import com.baehyeonwoo.advctravel.utils.RandomTeleporter
-import org.bukkit.Location
-import org.bukkit.World
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerRespawnEvent
 import org.bukkit.plugin.Plugin
-import java.util.*
+import org.bukkit.scheduler.BukkitRunnable
 
-class FirstJoinEvent : Listener {
+class RespawnEvent : Listener {
     private fun getInstance(): Plugin {
         return AdvcTravelMain.instance
     }
 
     private val server = getInstance().server
 
-    private val config = getInstance().config
-
     @EventHandler
-    fun onFirstJoin(e: PlayerJoinEvent) {
-        if(e.player.hasPlayedBefore()) {
-            return
+    fun onRespawn(e: PlayerRespawnEvent) {
+        val bukkitrunnable = object: BukkitRunnable() {
+            override fun run() {
+                RandomTeleporter().RandomTeleport(e.player)
+            }
         }
-        RandomTeleporter().RandomTeleport(e.player)
+        bukkitrunnable.runTaskLater(getInstance(), 4)
+
     }
 }
