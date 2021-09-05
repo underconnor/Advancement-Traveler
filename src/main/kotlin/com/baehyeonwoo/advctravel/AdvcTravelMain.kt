@@ -16,6 +16,7 @@
 
 package com.baehyeonwoo.advctravel
 
+import com.baehyeonwoo.advctravel.Listeners.FirstJoinEvent
 import org.bukkit.plugin.java.JavaPlugin
 
 /***
@@ -32,8 +33,9 @@ class AdvcTravelMain : JavaPlugin() {
     override fun onEnable() {
         instance = this
         saveDefaultConfig()
-        server.maxPlayers = config.getInt("max-players")
+//        server.maxPlayers = config.getInt("max-players")
         server.pluginManager.registerEvents(AdvcTravelEvent(), this)
+        server.pluginManager.registerEvents(FirstJoinEvent(), this)
         AdvcTravelKommand.advcTravelKommand()
     }
 }

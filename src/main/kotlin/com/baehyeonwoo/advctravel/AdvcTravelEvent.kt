@@ -23,7 +23,9 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Material
 import org.bukkit.World
+import org.bukkit.entity.Arrow
 import org.bukkit.entity.Player
+import org.bukkit.entity.Wolf
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
@@ -71,10 +73,7 @@ class AdvcTravelEvent : Listener {
     )
 
     @EventHandler
-    fun onPlayerJoin(e: PlayerJoinEvent) {
-        val p = e.player
-        p.noDamageTicks = 0
-    }
+    fun onPlayerJoin(e: PlayerJoinEvent) { e.player.noDamageTicks = 0 }
 
     @EventHandler
     fun onPlayerAdvancementDone(e: PlayerAdvancementDoneEvent) {
@@ -83,22 +82,18 @@ class AdvcTravelEvent : Listener {
 
         if (runner.contains(p.uniqueId.toString())) {
             if (!advancement.key.toString().startsWith("minecraft:recipes") && !advancement.key.toString().endsWith("root")) {
-                server.maxPlayers = server.maxPlayers + 1
-                config.set("max-players", server.maxPlayers)
+                config.set("max-players", config.getInt("max-players")+1)
                 getInstance().saveConfig()
             }
         }
     }
 
     @EventHandler
-    fun onAsyncChat(e: AsyncChatEvent) {
-        e.isCancelled = true
-    }
+    fun onAsyncChat(e: AsyncChatEvent) { e.isCancelled = true }
 
     @EventHandler
     fun onPlayerCommandPreprocess(e: PlayerCommandPreprocessEvent) {
-        val p = e.player
-        if (!administrator.contains(p.uniqueId.toString())) {
+        if (!administrator.contains(e.player.uniqueId.toString())) {
             e.isCancelled = true
         }
     }
@@ -108,17 +103,13 @@ class AdvcTravelEvent : Listener {
         val p = e.player
         val b = e.block
 
-        if (beds.contains(b.type)) {
-            if (p.world.environment == World.Environment.NETHER || p.world.environment == World.Environment.THE_END) {
-                e.isCancelled = true
-                p.sendMessage(text("지옥과 엔더에서는 침대가 막혀있습니다!", NamedTextColor.RED))
-            }
+        if (beds.contains(b.type) && p.world.environment != World.Environment.NORMAL) {
+            e.isCancelled = true
+            p.sendMessage(text("지옥과 엔더에서는 침대가 막혀있습니다!", NamedTextColor.RED))
         }
-        if (b.type == Material.RESPAWN_ANCHOR) {
-            if (p.world.environment == World.Environment.NORMAL || p.world.environment == World.Environment.THE_END) {
-                e.isCancelled = true
-                p.sendMessage(text("오버월드와 엔더에서는 리스폰 정박기가 막혀있습니다!", NamedTextColor.RED))
-            }
+        if (b.type == Material.RESPAWN_ANCHOR && p.world.environment != World.Environment.NETHER) {
+            e.isCancelled = true
+            p.sendMessage(text("오버월드와 엔더에서는 리스폰 정박기가 막혀있습니다!", NamedTextColor.RED))
         }
     }
 
@@ -127,10 +118,24 @@ class AdvcTravelEvent : Listener {
         val damager = e.damager
         val entity = e.entity
 
-        if (damager is Player && entity is Player) {
-            if (!runner.contains(damager.uniqueId.toString()) && !runner.contains(entity.uniqueId.toString())) {
-                e.isCancelled = true
+        var finaldamager: Player? = null
+        var finalentity: Player? = null
+        if (entity is Player) {
+            if(damager is Player) {
+                finaldamager = damager
             }
+            else if(damager is Wolf) {
+                finaldamager = damager.owner as Player?
+            }
+            else if(damager is Arrow) {
+                if(damager.shooter is Player) {
+                    finaldamager = damager.shooter as Player
+                }
+            }
+
+        }
+        if (!runner.contains(finaldamager?.uniqueId.toString()) && !runner.contains(finalentity?.uniqueId.toString())) {
+            e.isCancelled = true
         }
     }
 
@@ -142,6 +147,19 @@ class AdvcTravelEvent : Listener {
             if (e.result == Result.KICK_FULL && !p.isBanned) {
                 e.allow()
             }
+        }
+        else {
+
+            var numplayers = 0
+            for(p in server.onlinePlayers) {
+                if(!administrator.contains(p.uniqueId.toString())) {
+                    numplayers += 1
+                }
+            }
+            if(numplayers >= config.getInt("max-players")) {
+                e.disallow(Result.KICK_FULL, "서버가 꽉 찼습니다. §l넌 못 지나간다.") // Deprecated 먹었지만 해결 방법 없어서 패스
+            }
+
         }
     }
 
@@ -175,5 +193,13 @@ class AdvcTravelEvent : Listener {
     @EventHandler
     fun onPaperServerListPing(e: PaperServerListPingEvent) {
         e.motd(text("ADVANCEMENT TRAVELER", NamedTextColor.RED, TextDecoration.BOLD))
+        e.maxPlayers = config.getInt("max-players")
+        var numplayers = 0
+        for(p in server.onlinePlayers) {
+            if(!administrator.contains(p.uniqueId.toString())) {
+                numplayers += 1
+            }
+        }
+        e.numPlayers = numplayers
     }
 }
