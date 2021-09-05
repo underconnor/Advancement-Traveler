@@ -17,6 +17,7 @@
 package com.baehyeonwoo.advctravel
 
 import com.baehyeonwoo.advctravel.Listeners.FirstJoinEvent
+import com.baehyeonwoo.advctravel.Listeners.JoinEvent
 import com.baehyeonwoo.advctravel.Listeners.RespawnEvent
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -39,6 +40,7 @@ class AdvcTravelMain : JavaPlugin() {
         server.pluginManager.registerEvents(AdvcTravelEvent(), this)
         server.pluginManager.registerEvents(FirstJoinEvent(), this)
         server.pluginManager.registerEvents(RespawnEvent(), this)
+        server.pluginManager.registerEvents(JoinEvent(), this)
         AdvcTravelKommand.advcTravelKommand()
     }
 }

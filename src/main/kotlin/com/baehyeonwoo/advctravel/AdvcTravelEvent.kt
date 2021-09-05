@@ -19,6 +19,7 @@ package com.baehyeonwoo.advctravel
 import com.baehyeonwoo.advctravel.utils.getOnlinePlayers
 import com.destroystokyo.paper.event.server.PaperServerListPingEvent
 import io.papermc.paper.event.player.AsyncChatEvent
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
@@ -151,7 +152,7 @@ class AdvcTravelEvent : Listener {
         }
         else {
             if(getOnlinePlayers().getOnlinePlayers() >= config.getInt("max-players")) {
-                e.disallow(Result.KICK_FULL, "서버가 꽉 찼습니다. §l넌 못 지나간다.") // Deprecated 먹었지만 해결 방법 없어서 패스
+                e.disallow(Result.KICK_FULL, text("서버가 꽉 찼습니다."))
             }
 
         }
