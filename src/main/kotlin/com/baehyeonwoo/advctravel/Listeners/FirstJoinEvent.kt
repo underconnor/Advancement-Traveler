@@ -8,22 +8,23 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.plugin.Plugin
+import org.bukkit.scheduler.BukkitRunnable
 import java.util.*
 
 class FirstJoinEvent : Listener {
     private fun getInstance(): Plugin {
         return AdvcTravelMain.instance
     }
-
-    private val server = getInstance().server
-
-    private val config = getInstance().config
-
     @EventHandler
     fun onFirstJoin(e: PlayerJoinEvent) {
         if(e.player.hasPlayedBefore()) {
             return
         }
-        RandomTeleporter().RandomTeleport(e.player)
+        val bukkitrunnable = object: BukkitRunnable() {
+            override fun run() {
+                RandomTeleporter().RandomTeleport(e.player)
+            }
+        }
+        bukkitrunnable.runTaskLater(getInstance(), 4)
     }
 }
