@@ -16,18 +16,18 @@
 
 package com.baehyeonwoo.advctravel
 
-import com.baehyeonwoo.advctravel.Listeners.FirstJoinEvent
-import com.baehyeonwoo.advctravel.Listeners.JoinEvent
-import com.baehyeonwoo.advctravel.Listeners.RespawnEvent
+import com.baehyeonwoo.advctravel.listeners.FirstJoinEvent
+import com.baehyeonwoo.advctravel.listeners.RespawnEvent
 import org.bukkit.plugin.java.JavaPlugin
 
 /***
- * @author BaeHyeonWoo
+ * @author BaeHyeonWoo, FSanchir
  */
 
 class AdvcTravelMain : JavaPlugin() {
 
     companion object {
+        @JvmStatic
         lateinit var instance: AdvcTravelMain
             private set
     }
@@ -35,12 +35,15 @@ class AdvcTravelMain : JavaPlugin() {
     override fun onEnable() {
         instance = this
         saveDefaultConfig()
-        server.maxPlayers = 999
-//        server.maxPlayers = config.getInt("max-players")
+        server.maxPlayers = config.getInt("max-players")
         server.pluginManager.registerEvents(AdvcTravelEvent(), this)
+
+        // FSanchir's Works:
+
         server.pluginManager.registerEvents(FirstJoinEvent(), this)
         server.pluginManager.registerEvents(RespawnEvent(), this)
-        server.pluginManager.registerEvents(JoinEvent(), this)
+
+        // Hyeon's again.
         AdvcTravelKommand.advcTravelKommand()
     }
 }

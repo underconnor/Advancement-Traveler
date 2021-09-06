@@ -14,19 +14,25 @@
  * limitations under the License.
  */
 
-package com.baehyeonwoo.advctravel.utils
+package com.baehyeonwoo.advctravel.listeners
 
-import org.bukkit.entity.Player
-import kotlin.random.Random.Default.nextDouble
+import com.baehyeonwoo.advctravel.AdvcTravelMain
+import com.baehyeonwoo.advctravel.utils.randomTeleport
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import org.bukkit.event.player.PlayerJoinEvent
 
 /***
  * Original author FSanchir, Reconstructed by PatrcikKR.
  */
-fun randomTeleport(player: Player) {
-    player.teleport(player.location.set(nextCoord(), 120.0, nextCoord()))
-}
 
-private tailrec fun nextCoord(): Double {
-    val next = nextDouble(-500.0, 500.0)
-    return if (next !in -300.0..300.0) next else nextCoord()
+class FirstJoinEvent : Listener {
+    @EventHandler
+    fun onFirstJoin(event: PlayerJoinEvent) {
+        if (!event.player.hasPlayedBefore()) {
+            AdvcTravelMain.instance.server.scheduler.runTaskLater(AdvcTravelMain.instance, Runnable {
+                randomTeleport(event.player)
+            }, 4)
+        }
+    }
 }

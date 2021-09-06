@@ -16,18 +16,15 @@
 
 package com.baehyeonwoo.advctravel
 
-import com.baehyeonwoo.advctravel.utils.getOnlinePlayers
 import com.destroystokyo.paper.event.server.PaperServerListPingEvent
 import io.papermc.paper.event.player.AsyncChatEvent
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Material
+import org.bukkit.Tag
 import org.bukkit.World
-import org.bukkit.entity.Arrow
-import org.bukkit.entity.Player
-import org.bukkit.entity.Wolf
+import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
@@ -51,40 +48,28 @@ class AdvcTravelEvent : Listener {
 
     private val config = getInstance().config
 
-    private val administrator = config.getString("administrator").toString()
+    private val administrator = requireNotNull(config.getString("administrator"))
 
-    private val runner = config.getString("runner").toString()
+    private val runner = requireNotNull(config.getString("runner"))
 
-    private val beds = arrayOf(
-        Material.WHITE_BED,
-        Material.ORANGE_BED,
-        Material.MAGENTA_BED,
-        Material.LIGHT_BLUE_BED,
-        Material.YELLOW_BED,
-        Material.LIME_BED,
-        Material.PINK_BED,
-        Material.GRAY_BED,
-        Material.LIGHT_GRAY_BED,
-        Material.PURPLE_BED,
-        Material.GREEN_BED,
-        Material.BROWN_BED,
-        Material.RED_BED,
-        Material.CYAN_BED,
-        Material.BLUE_BED,
-        Material.BLACK_BED
-    )
+    private var numPlayers = 0
+
+    private var maxPlayers = 0
 
     @EventHandler
-    fun onPlayerJoin(e: PlayerJoinEvent) { e.player.noDamageTicks = 0 }
-
-    @EventHandler
-    fun onPlayerAdvancementDone(e: PlayerAdvancementDoneEvent) {
+    fun onPlayerJoin(e: PlayerJoinEvent) {
         val p = e.player
-        val advancement = e.advancement
+        p.noDamageTicks = 0
+    }
 
-        if (runner.contains(p.uniqueId.toString())) {
+    @EventHandler
+    fun onPlayerAdvancementDone(event: PlayerAdvancementDoneEvent) {
+        val advancement = event.advancement
+
+        if (runner.contains(event.player.uniqueId.toString())) {
             if (!advancement.key.toString().startsWith("minecraft:recipes") && !advancement.key.toString().endsWith("root")) {
-                config.set("max-players", config.getInt("max-players")+1)
+                maxPlayers = ++server.maxPlayers
+                config.set("max-players", maxPlayers)
                 getInstance().saveConfig()
             }
         }
@@ -101,43 +86,42 @@ class AdvcTravelEvent : Listener {
     }
 
     @EventHandler
-    fun onBlockPlace(e: BlockPlaceEvent) {
-        val p = e.player
-        val b = e.block
+    fun onBlockPlace(event: BlockPlaceEvent) {
+        val player = event.player
+        val block = event.block
 
-        if (beds.contains(b.type) && p.world.environment != World.Environment.NORMAL) {
-            e.isCancelled = true
-            p.sendMessage(text("지옥과 엔더에서는 침대가 막혀있습니다!", NamedTextColor.RED))
+        if (Tag.BEDS.isTagged(block.type) && player.world.environment != World.Environment.NORMAL) {
+            event.isCancelled = true
+            player.sendMessage(text("지옥과 엔더에서는 침대가 막혀있습니다!", NamedTextColor.RED))
         }
-        if (b.type == Material.RESPAWN_ANCHOR && p.world.environment != World.Environment.NETHER) {
-            e.isCancelled = true
-            p.sendMessage(text("오버월드와 엔더에서는 리스폰 정박기가 막혀있습니다!", NamedTextColor.RED))
+        if (block.type == Material.RESPAWN_ANCHOR && player.world.environment != World.Environment.NETHER) {
+            event.isCancelled = true
+            player.sendMessage(text("오버월드와 엔더에서는 리스폰 정박기가 막혀있습니다!", NamedTextColor.RED))
         }
     }
 
     @EventHandler
-    fun onEntityDamageByEntity(e: EntityDamageByEntityEvent) {
-        val damager = e.damager
-        val entity = e.entity
+    fun onEntityDamageByEntity(event: EntityDamageByEntityEvent) {
+        if (event.entity is Player) {
+            var player: Player? = null
+            when (val damager = event.damager) {
+                is Player -> {
+                    player = damager
+                }
+                is Tameable -> {
+                    if (damager is Wolf) {
+                        damager.isAngry = false
+                    }
 
-        var finaldamager: Player? = null
-        var finalentity: Player? = null
-        if (entity is Player) {
-            if(damager is Player) {
-                finaldamager = damager
-            }
-            else if(damager is Wolf) {
-                finaldamager = damager.owner as Player?
-            }
-            else if(damager is Arrow) {
-                if(damager.shooter is Player) {
-                    finaldamager = damager.shooter as Player
+                    player = damager.owner as? Player?
+                }
+                is Projectile -> {
+                    player = damager as? Player?
                 }
             }
-
-        }
-        if (!runner.contains(finaldamager?.uniqueId.toString()) && !runner.contains(finalentity?.uniqueId.toString())) {
-            e.isCancelled = true
+            if (player != null && !runner.contains(player.uniqueId.toString())) {
+                event.isCancelled = true
+            }
         }
     }
 
@@ -148,14 +132,32 @@ class AdvcTravelEvent : Listener {
         if (administrator.contains(p.uniqueId.toString())) {
             if (e.result == Result.KICK_FULL && !p.isBanned) {
                 e.allow()
-            }
-        }
-        else {
-            if(getOnlinePlayers().getOnlinePlayers() >= config.getInt("max-players")) {
-                e.disallow(Result.KICK_FULL, text("서버가 꽉 찼습니다."))
-            }
+                server.maxPlayers = ++server.maxPlayers
 
+                numPlayers = server.onlinePlayers.count() - 1
+                maxPlayers = --server.maxPlayers
+            }
         }
+    }
+
+    @EventHandler
+    fun onPlayerQuit(e: PlayerQuitEvent) {
+        val p = e.player
+
+        if (administrator.contains(p.uniqueId.toString())) {
+            if (!administrator.contains(runner)) {
+                numPlayers--
+                server.maxPlayers = --server.maxPlayers
+            }
+        }
+        else numPlayers--
+    }
+
+    @EventHandler
+    fun onPaperServerListPing(event: PaperServerListPingEvent) {
+        event.motd(text("ADVANCEMENT TRAVELER", NamedTextColor.RED, TextDecoration.BOLD))
+        event.numPlayers = numPlayers
+        event.maxPlayers = maxPlayers
     }
 
     @EventHandler
@@ -181,12 +183,5 @@ class AdvcTravelEvent : Listener {
         if (item.type == Material.DRAGON_EGG && !runner.contains(p.uniqueId.toString())) {
             e.isCancelled = true
         }
-    }
-
-    @EventHandler
-    fun onPaperServerListPing(e: PaperServerListPingEvent) {
-        e.motd(text("ADVANCEMENT TRAVELER", NamedTextColor.RED, TextDecoration.BOLD))
-        e.maxPlayers = config.getInt("max-players")
-        e.numPlayers = getOnlinePlayers().getOnlinePlayers()
     }
 }
