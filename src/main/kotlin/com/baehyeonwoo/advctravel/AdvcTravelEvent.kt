@@ -33,8 +33,6 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
-import org.bukkit.event.inventory.InventoryMoveItemEvent
-import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.*
 import org.bukkit.event.player.PlayerLoginEvent.Result
 import org.bukkit.plugin.Plugin
@@ -60,7 +58,7 @@ class AdvcTravelEvent : Listener {
 
     private val runner = requireNotNull(config.getString("runner").toString())
 
-    var maxPlayers = server.maxPlayers
+    private var maxPlayers = server.maxPlayers
 
     private fun randomTeleport(player: Player) {
         val randomX = Random.nextDouble(-1000.0, 1000.0)
@@ -140,6 +138,10 @@ class AdvcTravelEvent : Listener {
             e.isCancelled = true
             player.sendMessage(text("오버월드와 엔더에서는 리스폰 정박기가 막혀있습니다!", NamedTextColor.RED))
         }
+        if (block.type == Material.PISTON || block.type == Material.STICKY_PISTON || block.type == Material.HOPPER) {
+            e.isCancelled = true
+            player.sendMessage(text("NO.", NamedTextColor.RED))
+        }
     }
 
     @EventHandler
@@ -152,16 +154,19 @@ class AdvcTravelEvent : Listener {
                 }
                 is Tameable -> {
                     if (damager is Wolf) {
-                        damager.isAngry = false
+                        if (!runner.contains(damager.target?.uniqueId.toString())) {
+                            damager.isAngry = false
+                        }
+
                     }
 
-                    player = damager.owner as? Player?
+                    player = damager.owner as Player
                 }
                 is Projectile -> {
-                    player = damager as? Player?
+                    player = damager.shooter as Player
                 }
             }
-            if (player != null && !runner.contains(player.uniqueId.toString())) {
+            if (player != null && !runner.contains(player.uniqueId.toString()) && !runner.contains(e.entity.uniqueId.toString())) {
                 e.isCancelled = true
             }
         }
@@ -208,9 +213,15 @@ class AdvcTravelEvent : Listener {
 
     @EventHandler
     fun onPlayerRespawn(e: PlayerRespawnEvent) {
-        server.scheduler.runTaskLater(getInstance(), Runnable {
-            randomTeleport(e.player)
-        }, 4)
+        val p = e.player
+
+        println(p.bedSpawnLocation)
+
+        if (p.bedSpawnLocation == null) {
+            server.scheduler.runTaskLater(getInstance(), Runnable {
+                randomTeleport(p)
+            }, 4)
+        }
     }
 
 
@@ -235,15 +246,6 @@ class AdvcTravelEvent : Listener {
                     e.isCancelled = true
                     p.sendMessage(text("밸런스를 위해 이 블록에 상호작용이 불가능합니다.", NamedTextColor.RED))
                 }
-            }
-        }
-    }
-
-    @EventHandler
-    fun onIM(e: InventoryMoveItemEvent) {
-        if (e.source.type == InventoryType.HOPPER) {
-            if (e.item.type == Material.DRAGON_EGG) {
-                e.isCancelled = true
             }
         }
     }

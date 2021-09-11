@@ -25,14 +25,6 @@
 
 ## 관리자 명령어
 
-- /advc maxPlayers (서버 최대 플레이어 접속 가능 수치를 보여줌. 뒤에 정수 인수를 붙히게 되면 직접 설정 가능함.)
-
-
-    ```
-    Example: /advc maxPlayers 12
-    ```
-
-
 - /advc administrator (관리자 UUID 설정을 보여줌. 이벤트와 관련된 내용쪽에 영향을 끼침.)
   
   

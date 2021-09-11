@@ -48,31 +48,7 @@ object AdvcTravelKommand {
                         sender.sendMessage(text("Current Runner UUID settings: ${requireNotNull(config.getString("runner").toString())}"))
                     }
                 }
-                then ("maxPlayers") {
-                    executes {
-                        sender.sendMessage(text("Current maxPlayer settings: ${server.maxPlayers}"))
-                        sender.sendMessage(text("Current Config maxPlayer settings: ${requireNotNull(config.getInt("maxplayers"))}"))
-                    }
-                    then("newMaxPlayer" to int()) {
-                        executes {
-                            newMaxPlayers(it["newMaxPlayer"])
-                        }
-                    }
-                }
-                then("reload") {
-                    executes {
-                        getInstance().reloadConfig()
-                        sender.sendMessage(text("Config Reloaded."))
-                    }
-                }
             }
         }
-    }
-    private fun KommandSource.newMaxPlayers(maxPlayers: Int) {
-        config.set("maxplayers", maxPlayers)
-        getInstance().saveConfig()
-        server.maxPlayers = maxPlayers
-        AdvcTravelEvent().maxPlayers = maxPlayers
-        feedback(text("maxPlayers = $maxPlayers"))
     }
 }

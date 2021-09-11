@@ -38,8 +38,6 @@ class AdvcTravelMain : JavaPlugin() {
         instance = this
 
         AdvcTravelConfig.load(configFile)
-        logger.info("Server MaxPlayer Settings: ${server.maxPlayers}")
-        logger.info("Config MaxPlayer Settings: ${config.getInt("maxplayers")}")
         logger.info("Config Administrator Settings: ${config.getString("administrator")}")
         logger.info("Config Runner Settings: ${config.getString("runner")}")
         server.maxPlayers = config.getInt("maxplayers")
