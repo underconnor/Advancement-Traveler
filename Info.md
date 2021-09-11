@@ -19,19 +19,11 @@
 - 침대는 Overworld만, 리스폰 정박기는 Nether만 가능
 
 
-- **runner에 등록된 사람이 새로운 발전과제 달성 시 최대 플레이어 접속자 1명 추가, config 자동 저장.**
+- **runner에 등록된 사람이 새로운 발전과제 달성 시 최대 플레이어 접속자 1명 추가.**
 
 ---
 
 ## 관리자 명령어
-
-- /advc playerCount (디버그 명령어, 서버의 최대 플레이어 접속 가능 수치 표시 및 PaperServerListPingEvent의 num/max 플레이어를 표시함.)
-
-
-    ```
-    Example: /advc playerCount 
-    ```
-
 
 - /advc maxPlayers (서버 최대 플레이어 접속 가능 수치를 보여줌. 뒤에 정수 인수를 붙히게 되면 직접 설정 가능함.)
 
@@ -41,17 +33,17 @@
     ```
 
 
-- /advc administrator (관리자 UUID 설정을 보여줌. 이벤트와 관련된 내용쪽에 영향을 끼침. 뒤에 문자열인수를 붙히게 되면 직접 설정 가능함. **단 내용은 무조건 UUID여야 작동함.**)
+- /advc administrator (관리자 UUID 설정을 보여줌. 이벤트와 관련된 내용쪽에 영향을 끼침.)
   
   
     ```
-    Example: /advc administrator <UUID GREEDY STRING>
+    Example: /advc administrator
     ```
  
 
-- /advc runner (플러그인 플레이어, 즉 러너의 UUID 설정을 보여줌. 이벤트와 관련된 내용쪽에 영향을 끼침. 뒤에 문자열인수를 붙히게 되면 직접 설정 가능함. **단 내용은 무조건 UUID여야 작동함.**)
+- /advc runner (플러그인 플레이어, 즉 러너의 UUID 설정을 보여줌. 이벤트와 관련된 내용쪽에 영향을 끼침.)
 
 
     ```
-    Example: /advc runner <UUID GREEDY STRING>
+    Example: /advc runner
     ```

@@ -60,8 +60,6 @@ class AdvcTravelEvent : Listener {
 
     private val runner = requireNotNull(config.getString("runner").toString())
 
-    var numPlayers = server.onlinePlayers.size
-
     var maxPlayers = server.maxPlayers
 
     private fun randomTeleport(player: Player) {
