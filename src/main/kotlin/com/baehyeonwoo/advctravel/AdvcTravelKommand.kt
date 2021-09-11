@@ -17,8 +17,6 @@
 package com.baehyeonwoo.advctravel
 
 import io.github.monun.kommand.KommandSource
-import io.github.monun.kommand.StringType
-import io.github.monun.kommand.getValue
 import io.github.monun.kommand.kommand
 import net.kyori.adventure.text.Component.text
 import org.bukkit.plugin.Plugin
@@ -44,33 +42,10 @@ object AdvcTravelKommand {
                     executes {
                         sender.sendMessage(text("Current Administrator UUID settings: ${requireNotNull(config.getString("administrator").toString())}"))
                     }
-                    then("newAdministrator" to string(StringType.GREEDY_PHRASE)) {
-                        executes {
-                            val newAdministrator: String by it
-                            val playerArray = arrayListOf(newAdministrator).toString()
-
-                            newAdministrator(playerArray)
-                        }
-                    }
-                }
-                then("playerCount") {
-                    executes {
-                        sender.sendMessage(text("Current Server's maxPlayers Settings: ${server.maxPlayers}"))
-                        sender.sendMessage(text("Current MOTD's numPlayers Settings: ${AdvcTravelEvent().numPlayers}"))
-                        sender.sendMessage(text("Current MOTD's maxPlayers Settings: ${AdvcTravelEvent().maxPlayers}"))
-                    }
                 }
                 then("runner") {
                     executes {
                         sender.sendMessage(text("Current Runner UUID settings: ${requireNotNull(config.getString("runner").toString())}"))
-                    }
-                    then("newRunner" to string(StringType.GREEDY_PHRASE)) {
-                        executes {
-                            val newRunner: String by it
-                            val runnerArray = arrayListOf(newRunner).toString()
-
-                            newRunner(runnerArray)
-                        }
                     }
                 }
                 then ("maxPlayers") {
@@ -84,23 +59,20 @@ object AdvcTravelKommand {
                         }
                     }
                 }
+                then("reload") {
+                    executes {
+                        getInstance().reloadConfig()
+                        sender.sendMessage(text("Config Reloaded."))
+                    }
+                }
             }
         }
-    }
-    private fun KommandSource.newAdministrator(administrator: String) {
-        config.set("administrator", administrator)
-        getInstance().saveConfig()
-        feedback(text("administrator: $administrator"))
     }
     private fun KommandSource.newMaxPlayers(maxPlayers: Int) {
         config.set("maxplayers", maxPlayers)
         getInstance().saveConfig()
         server.maxPlayers = maxPlayers
+        AdvcTravelEvent().maxPlayers = maxPlayers
         feedback(text("maxPlayers = $maxPlayers"))
-    }
-    private fun KommandSource.newRunner(newRunner: String) {
-        config.set("runner", newRunner)
-        getInstance().saveConfig()
-        feedback(text("runner = $newRunner"))
     }
 }
