@@ -16,7 +16,6 @@
 
 package com.baehyeonwoo.advctravel
 
-import io.github.monun.kommand.KommandSource
 import io.github.monun.kommand.kommand
 import net.kyori.adventure.text.Component.text
 import org.bukkit.plugin.Plugin
@@ -30,8 +29,6 @@ object AdvcTravelKommand {
     private fun getInstance(): Plugin {
         return AdvcTravelMain.instance
     }
-
-    private val server = getInstance().server
     
     private val config = getInstance().config
 

@@ -58,27 +58,11 @@ class AdvcTravelEvent : Listener {
 
     private val runner = requireNotNull(config.getString("runner").toString())
 
-    private var maxPlayers = server.maxPlayers
-
     private fun randomTeleport(player: Player) {
         val randomX = Random.nextDouble(-1000.0, 1000.0)
         val randomZ = Random.nextDouble(-1000.0, 1000.0)
 
         player.teleport(player.location.set(randomX, player.world.getHighestBlockYAt(randomX.toInt(), randomZ.toInt()).toDouble(), randomZ))
-    }
-
-    private fun onlinePlayerCount(): Int {
-        var onlinep = 0
-        for(i in server.onlinePlayers) {
-            if(i.uniqueId.toString() in administrator) {
-                if(i.uniqueId.toString() in runner) {
-                    onlinep += 1
-                }
-                continue
-            }
-            onlinep += 1
-        }
-        return onlinep
     }
 
     @EventHandler
@@ -99,9 +83,8 @@ class AdvcTravelEvent : Listener {
 
         if (p.uniqueId.toString() in runner) {
             if (!advancement.key.toString().startsWith("minecraft:recipes") && !advancement.key.toString().endsWith("root")) {
-                server.maxPlayers += 1
-                maxPlayers = server.maxPlayers
-                config.set("maxplayers", maxPlayers)
+                ++server.maxPlayers
+                config.set("maxplayers", server.maxPlayers)
                 getInstance().saveConfig()
             }
         }
@@ -177,23 +160,15 @@ class AdvcTravelEvent : Listener {
     @EventHandler
     fun onPlayerLogin(e: PlayerLoginEvent) {
         val p = e.player
-        if(p.uniqueId.toString() in administrator) {
+        if(p.uniqueId.toString() in administrator || p.uniqueId.toString() in runner) {
             if(!p.isBanned) {
-                if(p.uniqueId.toString() in runner) {
-                    if(e.result == Result.KICK_FULL) {
-                        maxPlayers += 1
-                        server.maxPlayers = maxPlayers
-                    }
-                }
-                else {
-                    server.maxPlayers += 1
-                }
                 if(e.result == Result.KICK_FULL) {
                     e.allow()
                 }
+                ++server.maxPlayers
             }
         }
-        config.set("maxplayers", maxPlayers)
+        config.set("maxplayers", server.maxPlayers)
         getInstance().saveConfig()
     }
 
@@ -202,11 +177,8 @@ class AdvcTravelEvent : Listener {
     fun onPlayerQuit(e: PlayerQuitEvent) {
         val p = e.player
 
-        if(p.uniqueId.toString() in administrator) {
-            if(p.uniqueId.toString() in runner) {
-                maxPlayers -= 1
-            }
-            server.maxPlayers -= 1
+        if(p.uniqueId.toString() in administrator || p.uniqueId.toString() in runner) {
+            --server.maxPlayers
         }
 
         config.set("maxplayers", server.maxPlayers)
@@ -229,9 +201,6 @@ class AdvcTravelEvent : Listener {
     @EventHandler
     fun onPaperServerListPing(e: PaperServerListPingEvent) {
         e.motd(text("ADVANCEMENT TRAVELER", NamedTextColor.RED, TextDecoration.BOLD))
-
-        e.numPlayers = onlinePlayerCount()
-        e.maxPlayers = maxPlayers
         e.playerSample.clear()
     }
 
