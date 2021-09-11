@@ -215,8 +215,6 @@ class AdvcTravelEvent : Listener {
     fun onPlayerRespawn(e: PlayerRespawnEvent) {
         val p = e.player
 
-        println(p.bedSpawnLocation)
-
         if (p.bedSpawnLocation == null) {
             server.scheduler.runTaskLater(getInstance(), Runnable {
                 randomTeleport(p)
