@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 BaeHyeonWoo
+ * Copyright (c) 2021 BaeHyeonWoo & Others
  *
  *  Licensed under the General Public License, Version 3.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,34 +16,39 @@
 
 package com.baehyeonwoo.advctravel
 
-import com.baehyeonwoo.advctravel.listeners.FirstJoinEvent
-import com.baehyeonwoo.advctravel.listeners.RespawnEvent
 import org.bukkit.plugin.java.JavaPlugin
+import java.io.File
 
 /***
- * @author BaeHyeonWoo, FSanchir
+ * @author BaeHyeonWoo
+ *
+ * @Co_author FSanchir & PatrickKR
  */
 
 class AdvcTravelMain : JavaPlugin() {
 
     companion object {
-        @JvmStatic
         lateinit var instance: AdvcTravelMain
             private set
     }
 
+    private val configFile = File(dataFolder, "config.yml")
+
     override fun onEnable() {
         instance = this
-        saveDefaultConfig()
-        server.maxPlayers = config.getInt("max-players")
+
+        AdvcTravelConfig.load(configFile)
+        logger.info("Server MaxPlayer Settings: ${server.maxPlayers}")
+        logger.info("Config MaxPlayer Settings: ${config.getInt("maxplayers")}")
+        logger.info("Config Administrator Settings: ${config.getString("administrator")}")
+        logger.info("Config Runner Settings: ${config.getString("runner")}")
+        server.maxPlayers = config.getInt("maxplayers")
         server.pluginManager.registerEvents(AdvcTravelEvent(), this)
-
-        // FSanchir's Works:
-
-        server.pluginManager.registerEvents(FirstJoinEvent(), this)
-        server.pluginManager.registerEvents(RespawnEvent(), this)
-
-        // Hyeon's again.
         AdvcTravelKommand.advcTravelKommand()
+    }
+
+    override fun onDisable() {
+        config.set("maxplayers", server.maxPlayers)
+        saveConfig()
     }
 }

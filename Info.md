@@ -1,9 +1,9 @@
 # 플러그인 이벤트 감지내용
 
-- 헌터끼리는 때릴 수 없고 헌터와 러너사이의 PVP가능
+- 헌터끼리는 때릴 수 없고 헌터와 러너사이의 PVP가능 (일부는 가능할 수도 있으나 패치할 예정. 컨텐츠 시작때 바로 이야기 해주신 시청자분들 감사드립니다.)
 
 
-- 헌터는 엔더 포탈, 드래곤 알 상호작용 불가
+- 헌터는 엔더 포탈, 드래곤 알, 호퍼 상호작용 불가 (qzeon님 버그제보 감사드립니다.)
 
 
 - 헌터는 드래곤 알 줍기 불가
@@ -19,13 +19,21 @@
 - 침대는 Overworld만, 리스폰 정박기는 Nether만 가능
 
 
-- **runner에 등록된 사람이 새로운 발전과제 달성 시 최대 플레이어 접속자 1명 추가, config 자동저장.**
+- **runner에 등록된 사람이 새로운 발전과제 달성 시 최대 플레이어 접속자 1명 추가, config 자동 저장.**
 
 ---
 
 ## 관리자 명령어
 
-- /advc maxPlayers (서버 최대 플레이어 접속자를 보여줌. 뒤에 정수 인수를 붙히게 되면 직접 설정 가능함.)
+- /advc playerCount (디버그 명령어, 서버의 최대 플레이어 접속 가능 수치 표시 및 PaperServerListPingEvent의 num/max 플레이어를 표시함.)
+
+
+    ```
+    Example: /advc playerCount 
+    ```
+
+
+- /advc maxPlayers (서버 최대 플레이어 접속 가능 수치를 보여줌. 뒤에 정수 인수를 붙히게 되면 직접 설정 가능함.)
 
 
     ```
@@ -37,7 +45,7 @@
   
   
     ```
-    Example: /advc administrator 389c4c9b-6342-42fc-beb3-922a7d7a72f9 5082c832-7f7c-4b04-b0c7-2825062b7638 762dea11-9c45-4b18-95fc-a86aab3b39ee 63e8e8a6-4104-4abf-811b-2ed277a02738 ad524e9e-acf5-4977-9c12-938212663361
+    Example: /advc administrator <UUID GREEDY STRING>
     ```
  
 
@@ -45,8 +53,5 @@
 
 
     ```
-    Example: /advc runner 389c4c9b-6342-42fc-beb3-922a7d7a72f9
+    Example: /advc runner <UUID GREEDY STRING>
     ```
-
-
-**config가 건드려지는 설정은 리로딩이 필요 할 수 있음.**
