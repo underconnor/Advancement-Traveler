@@ -71,6 +71,20 @@ class AdvcTravelEvent : Listener {
         player.teleport(player.location.set(randomX, player.world.getHighestBlockYAt(randomX.toInt(), randomZ.toInt()).toDouble(), randomZ))
     }
 
+    private fun onlinePlayerCount(): Int {
+        var onlinep = 0
+        for(i in server.onlinePlayers) {
+            if(i.uniqueId.toString() in administrator) {
+                if(i.uniqueId.toString() in runner) {
+                    onlinep += 1
+                }
+                continue
+            }
+            onlinep += 1
+        }
+        return onlinep
+    }
+
     @EventHandler
     fun onPlayerJoin(e: PlayerJoinEvent) {
         val p = e.player
@@ -89,10 +103,9 @@ class AdvcTravelEvent : Listener {
 
         if (p.uniqueId.toString() in runner) {
             if (!advancement.key.toString().startsWith("minecraft:recipes") && !advancement.key.toString().endsWith("root")) {
-                server.maxPlayers = ++server.maxPlayers
-                maxPlayers = --server.maxPlayers
+                server.maxPlayers += 1
+                maxPlayers = server.maxPlayers
                 config.set("maxplayers", maxPlayers)
-                getInstance().saveConfig()
                 getInstance().saveConfig()
             }
         }
@@ -159,36 +172,21 @@ class AdvcTravelEvent : Listener {
     @EventHandler
     fun onPlayerLogin(e: PlayerLoginEvent) {
         val p = e.player
-        // 1/1
-        if (p.uniqueId.toString() in administrator) { // 서버 접속한 사람이 관리자
-            if (e.result == Result.KICK_FULL && !p.isBanned) { // 만약에 서버가 꽉찼다면
-                if (p.uniqueId.toString() !in runner) { // 그리고 접속하는 사람이 러너가 아니라면
-                    e.allow() // 서버접속 허가
-                    ++server.maxPlayers // 서버 최대 인원 증가 (만약 1/1 이었다면 2/2)
-
-                    if (numPlayers == 0) {
-                        numPlayers = 0
-                    }
-                    if (numPlayers == 1) {
-                        numPlayers = 1
-                    } else {
-                        server.onlinePlayers.count() - 1
-                    }
-                    maxPlayers = server.maxPlayers - 1 // 서버목록상으로 1/1
+        if(p.uniqueId.toString() in administrator) {
+            if(!p.isBanned) {
+                if(e.result == Result.KICK_FULL) {
+                    e.allow()
+                }
+                if(p.uniqueId.toString() in runner) {
+                    maxPlayers += 1
+                    server.maxPlayers = maxPlayers
                 }
                 else {
-                    e.allow()
-                    ++server.maxPlayers // 만약에 러너라면 서버 최대 인원 증가 (만약 1/1 이었다면 2/2 | 서버상)
-                    ++numPlayers // 서버목록 표시상으로 2/2로 만듬
-                    maxPlayers = server.maxPlayers
+                    server.maxPlayers += 1
                 }
             }
-            else ++numPlayers
         }
-        else {
-            ++numPlayers // 관리자가 아닐시 numPlayers 그냥 증가
-        }
-        config.set("maxplayers", server.maxPlayers)
+        config.set("maxplayers", maxPlayers)
         getInstance().saveConfig()
     }
 
@@ -197,19 +195,13 @@ class AdvcTravelEvent : Listener {
     fun onPlayerQuit(e: PlayerQuitEvent) {
         val p = e.player
 
-        if (p.uniqueId.toString() in administrator) { // 서버 퇴장한 사람이 관리자
-            if (p.uniqueId.toString() !in runner) { // 그리고 나가는 사람이 러너가 아니라면
-                numPlayers = server.onlinePlayers.size - 1 // 서버 목록상에서 1/1로 변경
+        if(p.uniqueId.toString() in administrator) {
+            if(p.uniqueId.toString() in runner) {
+                maxPlayers -= 1
             }
-            else { // 나간 사람 러너
-                --server.maxPlayers
-                --numPlayers
-                maxPlayers = server.maxPlayers
-            }
+            server.maxPlayers -= 1
         }
-        else {
-            --numPlayers // 관리자가 아닐시 numPlayers 그냥 감소
-        }
+
         config.set("maxplayers", server.maxPlayers)
         getInstance().saveConfig()
     }
@@ -218,7 +210,7 @@ class AdvcTravelEvent : Listener {
     fun onPlayerRespawn(e: PlayerRespawnEvent) {
         server.scheduler.runTaskLater(getInstance(), Runnable {
             randomTeleport(e.player)
-        }, 0)
+        }, 4)
     }
 
 
@@ -226,11 +218,8 @@ class AdvcTravelEvent : Listener {
     @EventHandler
     fun onPaperServerListPing(e: PaperServerListPingEvent) {
         e.motd(text("ADVANCEMENT TRAVELER", NamedTextColor.RED, TextDecoration.BOLD))
-//        var numP = 0
-//        for(i in server.onlinePlayers) {
-//            if(config.getString(""))
-//        } 잠만요 Tap Config 사용법을 몰라요 ㅋㅋㅋ
-        e.numPlayers = numPlayers
+
+        e.numPlayers = onlinePlayerCount()
         e.maxPlayers = maxPlayers
         e.playerSample.clear()
     }
