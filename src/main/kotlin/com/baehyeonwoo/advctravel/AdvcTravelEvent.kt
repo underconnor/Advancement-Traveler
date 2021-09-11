@@ -174,15 +174,17 @@ class AdvcTravelEvent : Listener {
         val p = e.player
         if(p.uniqueId.toString() in administrator) {
             if(!p.isBanned) {
-                if(e.result == Result.KICK_FULL) {
-                    e.allow()
-                }
                 if(p.uniqueId.toString() in runner) {
-                    maxPlayers += 1
-                    server.maxPlayers = maxPlayers
+                    if(e.result == Result.KICK_FULL) {
+                        maxPlayers += 1
+                        server.maxPlayers = maxPlayers
+                    }
                 }
                 else {
                     server.maxPlayers += 1
+                }
+                if(e.result == Result.KICK_FULL) {
+                    e.allow()
                 }
             }
         }
