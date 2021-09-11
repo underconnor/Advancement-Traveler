@@ -93,7 +93,6 @@ class AdvcTravelEvent : Listener {
                 maxPlayers = --server.maxPlayers
                 config.set("maxplayers", maxPlayers)
                 getInstance().saveConfig()
-                getInstance().saveConfig()
             }
         }
     }
