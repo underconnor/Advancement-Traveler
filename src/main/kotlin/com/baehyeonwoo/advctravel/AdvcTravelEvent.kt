@@ -163,7 +163,9 @@ class AdvcTravelEvent : Listener {
                     player = damager.owner as Player
                 }
                 is Projectile -> {
-                    player = damager.shooter as Player
+                    if (damager.shooter is Player) {
+                        player = damager.shooter as Player
+                    }
                 }
             }
             if (player != null && !runner.contains(player.uniqueId.toString()) && !runner.contains(e.entity.uniqueId.toString())) {
