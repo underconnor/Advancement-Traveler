@@ -21,6 +21,7 @@ import io.papermc.paper.event.player.AsyncChatEvent
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.World
@@ -69,6 +70,13 @@ class AdvcTravelEvent : Listener {
     fun onPlayerJoin(e: PlayerJoinEvent) {
         val p = e.player
         p.noDamageTicks = 0
+        if(!runner.contains(p.uniqueId.toString())){
+            val sm = Bukkit.getScoreboardManager()
+            val sc = sm.mainScoreboard
+
+            val team = sc.getTeam("Hunter")
+            team?.addEntry(p.name)
+        }
         if (!p.hasPlayedBefore()) {
             server.scheduler.runTaskLater(getInstance(), Runnable {
                 randomTeleport(p)
@@ -127,6 +135,7 @@ class AdvcTravelEvent : Listener {
         }
     }
 
+    /* (Team으로 해결)
     @EventHandler
     fun onEntityDamageByEntity(e: EntityDamageByEntityEvent) {
         if (e.entity is Player) {
@@ -156,6 +165,7 @@ class AdvcTravelEvent : Listener {
             }
         }
     }
+    */
 
     @EventHandler
     fun onPlayerLogin(e: PlayerLoginEvent) {

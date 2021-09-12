@@ -16,6 +16,7 @@
 
 package com.baehyeonwoo.advctravel
 
+import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
 
@@ -43,6 +44,15 @@ class AdvcTravelMain : JavaPlugin() {
         server.maxPlayers = config.getInt("maxplayers")
         server.pluginManager.registerEvents(AdvcTravelEvent(), this)
         AdvcTravelKommand.advcTravelKommand()
+
+        val sm = Bukkit.getScoreboardManager()
+        val sc = sm.mainScoreboard
+
+        val team = sc.getTeam("Hunter")
+        if(team == null) sc.registerNewTeam("Hunter")
+
+        team?.setAllowFriendlyFire(false)
+        team?.setCanSeeFriendlyInvisibles(false)
     }
 
     override fun onDisable() {
