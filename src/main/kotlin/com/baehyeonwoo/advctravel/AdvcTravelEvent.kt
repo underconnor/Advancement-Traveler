@@ -70,13 +70,17 @@ class AdvcTravelEvent : Listener {
     fun onPlayerJoin(e: PlayerJoinEvent) {
         val p = e.player
         p.noDamageTicks = 0
-        if(!runner.contains(p.uniqueId.toString())){
-            val sm = Bukkit.getScoreboardManager()
-            val sc = sm.mainScoreboard
 
-            val team = sc.getTeam("Hunter")
-            team?.addEntry(p.name)
+        val sm = Bukkit.getScoreboardManager()
+        val sc = sm.mainScoreboard
+        if(runner.contains(p.uniqueId.toString())){
+            val runner = sc.getTeam("Runner")
+            runner?.addEntry(p.name)
+        } else{
+            val hunter = sc.getTeam("Hunter")
+            hunter?.addEntry(p.name)
         }
+
         if (!p.hasPlayedBefore()) {
             server.scheduler.runTaskLater(getInstance(), Runnable {
                 randomTeleport(p)

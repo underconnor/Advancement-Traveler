@@ -16,6 +16,7 @@
 
 package com.baehyeonwoo.advctravel
 
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
@@ -48,11 +49,19 @@ class AdvcTravelMain : JavaPlugin() {
         val sm = Bukkit.getScoreboardManager()
         val sc = sm.mainScoreboard
 
-        val team = sc.getTeam("Hunter")
-        if(team == null) sc.registerNewTeam("Hunter")
+        val hunter = sc.getTeam("Hunter")
+        if(hunter == null) sc.registerNewTeam("Hunter")
 
-        team?.setAllowFriendlyFire(false)
-        team?.setCanSeeFriendlyInvisibles(false)
+        hunter?.setAllowFriendlyFire(false)
+        hunter?.setCanSeeFriendlyInvisibles(false)
+        hunter?.color(NamedTextColor.RED)
+
+        val runner = sc.getTeam("Runner")
+        if(runner == null) sc.registerNewTeam("Runner")
+
+        hunter?.setAllowFriendlyFire(false)
+        hunter?.setCanSeeFriendlyInvisibles(false)
+        hunter?.color(NamedTextColor.AQUA)
     }
 
     override fun onDisable() {
