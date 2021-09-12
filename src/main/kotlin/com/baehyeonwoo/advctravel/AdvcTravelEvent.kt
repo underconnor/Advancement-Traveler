@@ -26,8 +26,6 @@ import org.bukkit.Tag
 import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.entity.Projectile
-import org.bukkit.entity.Tameable
-import org.bukkit.entity.Wolf
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
@@ -135,23 +133,23 @@ class AdvcTravelEvent : Listener {
                 is Player -> {
                     player = damager
                 }
-                is Tameable -> {
-                    if (damager is Wolf) {
-                        if (!runner.contains(damager.target?.uniqueId.toString())) {
-                            damager.isAngry = false
-                        }
-
-                    }
-
-                    player = damager.owner as Player
-                }
+//                is Tameable -> {
+//                    if (damager is Wolf) {
+//                        if (!runner.contains(damager.target?.uniqueId.toString())) {
+//                            damager.isAngry = false
+//                        }
+//
+//                    }
+//
+//                    player = damager.owner as Player
+//                }
                 is Projectile -> {
                     if (damager.shooter is Player) {
                         player = damager.shooter as Player
                     }
                 }
             }
-            if (player != null && !runner.contains(player.uniqueId.toString()) && !runner.contains(e.entity.uniqueId.toString())) {
+            if ((player != null) && !runner.contains(player.uniqueId.toString()) && !runner.contains(e.entity.uniqueId.toString())) {
                 e.isCancelled = true
             }
         }

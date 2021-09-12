@@ -46,7 +46,11 @@ class AdvcTravelMain : JavaPlugin() {
     }
 
     override fun onDisable() {
-        config.set("maxplayers", server.maxPlayers)
+        val adminCount = server.onlinePlayers.asSequence().filter {
+            config.getString("administrator").toString().contains(it.uniqueId.toString())
+        }.toMutableList().size
+
+        config.set("maxplayers", server.maxPlayers - adminCount)
         saveConfig()
     }
 }
