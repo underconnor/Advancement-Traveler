@@ -23,3 +23,14 @@ Large-scale Viewer-participating Content Plugin for [komq](https://youtube.com/ì
 ### Info Markdown
 
 **[[Info.md](./Info.md)]**
+
+---
+
+## Maintainers:
+- [[BaeHyeonWoo](https://github.com/qogusdn1017)]
+- [[PyBsh](https://github.com/PyBsh)]
+
+## Contributors:
+
+- [[PatrickKR](https://github.com/patrick-choe)]
+- [[FSanchir](https://github.com/fsanchir)]
