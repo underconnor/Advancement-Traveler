@@ -112,8 +112,10 @@ class AdvcTravelEvent : Listener {
     @EventHandler
     fun onPlayerCommandPreprocess(e: PlayerCommandPreprocessEvent) {
         val p = e.player
+        val c = e.message
 
-        if (p.uniqueId.toString() !in administrator) {
+        if(c.startsWith("tpa") || c.startsWith("teammsg")) e.isCancelled = false
+        else if (p.uniqueId.toString() !in administrator) {
             e.isCancelled = true
         }
     }
