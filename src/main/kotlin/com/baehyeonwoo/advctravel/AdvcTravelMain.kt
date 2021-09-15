@@ -44,7 +44,9 @@ class AdvcTravelMain : JavaPlugin() {
         logger.info("Config Runner Settings: ${config.getString("runner")}")
         server.maxPlayers = config.getInt("maxplayers")
         server.pluginManager.registerEvents(AdvcTravelEvent(), this)
+        server.pluginManager.registerEvents(AdvcTpaListener(), this)
         AdvcTravelKommand.advcTravelKommand()
+        AdvcTpaKommand.advcTpaKommand()
 
         val sm = Bukkit.getScoreboardManager()
         val sc = sm.mainScoreboard
@@ -59,9 +61,9 @@ class AdvcTravelMain : JavaPlugin() {
         val runner = sc.getTeam("Runner")
         if(runner == null) sc.registerNewTeam("Runner")
 
-        hunter?.setAllowFriendlyFire(false)
-        hunter?.setCanSeeFriendlyInvisibles(false)
-        hunter?.color(NamedTextColor.AQUA)
+        runner?.setAllowFriendlyFire(false)
+        runner?.setCanSeeFriendlyInvisibles(false)
+        runner?.color(NamedTextColor.AQUA)
     }
 
     override fun onDisable() {

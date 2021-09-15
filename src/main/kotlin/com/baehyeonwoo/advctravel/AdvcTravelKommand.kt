@@ -16,12 +16,8 @@
 
 package com.baehyeonwoo.advctravel
 
-import io.github.monun.kommand.getValue
 import io.github.monun.kommand.kommand
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.Location
-import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
 
 
@@ -35,8 +31,6 @@ object AdvcTravelKommand {
     }
     
     private val config = getInstance().config
-
-    private val server = getInstance().server
 
     fun advcTravelKommand() {
         getInstance().kommand {
@@ -52,48 +46,6 @@ object AdvcTravelKommand {
                     }
                 }
             }
-//            register("tpa") {
-//                requires { playerOrNull != null }
-//                executes {
-//                    sender.sendMessage(text("사용법: /tpa [PlayerName]", NamedTextColor.RED))
-//                }
-//                then("requestPlayer" to player()) {
-//                    executes {
-//                        val requestPlayer: String by it
-//                        val tpaPlayer = requireNotNull(server.getPlayer(requestPlayer))
-//
-//                        player.sendMessage(text("${tpaPlayer.name}에게 텔레포트 요청을 보냈습니다.\n"))
-//
-//                    }
-//                }
-//            }
-//            register("tpahere") {
-//                requires { playerOrNull != null }
-//                executes {
-//                    sender.sendMessage(text("사용법: /tpahere [PlayerName]", NamedTextColor.RED))
-//                }
-//                then("requestPlayer" to player()) {
-//
-//                }
-//            }
-//            register("tpaccept") {
-//
-//            }
-//            register("tpac") {
-//
-//            }
-//            register("tpdeny") {
-//
-//            }
-//            register("tpd") {
-//
-//            }
-//            register("tpacancel") {
-//
-//            }
-//            register("tpaca") {
-//
-//            }
         }
     }
 }
