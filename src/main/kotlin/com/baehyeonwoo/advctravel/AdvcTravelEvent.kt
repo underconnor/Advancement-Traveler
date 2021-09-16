@@ -103,9 +103,13 @@ class AdvcTravelEvent : Listener {
     @EventHandler
     fun onAsyncChat(e: AsyncChatEvent) {
         val p = e.player
+        val m = e.message()
 
         if (p.uniqueId.toString() !in administrator) {
             e.isCancelled = true
+        }
+        else {
+            server.dispatchCommand(p, "teammsg $m")
         }
     }
 
