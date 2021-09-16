@@ -120,7 +120,7 @@ class AdvcTravelEvent : Listener {
             )
 
             e.isCancelled = true
-            Bukkit.getConsoleSender().sendMessage(text("<${p.name}> $msg"))
+            Bukkit.getConsoleSender().sendMessage(text("${p.name} issued server command: /teammsg $msg"))
         }
     }
 
@@ -129,7 +129,7 @@ class AdvcTravelEvent : Listener {
         val p = e.player
         val c = e.message
 
-        if(c.startsWith("/tpa") || c.startsWith("/teammsg")) e.isCancelled = false
+        if(c.startsWith("/tpa") || c.startsWith("/teammsg") || c.startsWith("/tm")) e.isCancelled = false
         else if (p.uniqueId.toString() !in administrator) {
             e.isCancelled = true
         }
