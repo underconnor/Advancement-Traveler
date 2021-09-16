@@ -19,12 +19,14 @@ package com.baehyeonwoo.advctravel
 import com.destroystokyo.paper.event.server.PaperServerListPingEvent
 import io.papermc.paper.event.player.AsyncChatEvent
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.World
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.entity.Projectile
 import org.bukkit.event.EventHandler
@@ -103,13 +105,22 @@ class AdvcTravelEvent : Listener {
     @EventHandler
     fun onAsyncChat(e: AsyncChatEvent) {
         val p = e.player
-        val m = e.message()
+        val msgComponent = e.message()
+        val msg = (msgComponent as TextComponent).content()
 
-        if (p.uniqueId.toString() !in administrator) {
-            e.isCancelled = true
+        if (p.uniqueId.toString() in administrator) {
+            e.isCancelled = false
         }
         else {
-            server.dispatchCommand(p, "teammsg $m")
+            server.scheduler.runTask(
+                getInstance(),
+                Runnable {
+                    server.dispatchCommand(p as CommandSender, "teammsg $msg")
+                }
+            )
+
+            e.isCancelled = true
+            Bukkit.getConsoleSender().sendMessage(text("<${p.name}> $msg"))
         }
     }
 
@@ -118,7 +129,7 @@ class AdvcTravelEvent : Listener {
         val p = e.player
         val c = e.message
 
-        if(c.startsWith("tpa") || c.startsWith("teammsg")) e.isCancelled = false
+        if(c.startsWith("/tpa") || c.startsWith("/teammsg")) e.isCancelled = false
         else if (p.uniqueId.toString() !in administrator) {
             e.isCancelled = true
         }
