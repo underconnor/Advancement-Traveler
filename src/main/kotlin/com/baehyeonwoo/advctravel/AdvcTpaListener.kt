@@ -28,6 +28,7 @@ class AdvcTpaListener: Listener {
                 players.get(p)?.cancel()
                 p.sendMessage(text("움직임이 감지되어 텔레포트가 취소되었습니다.",NamedTextColor.RED))
                 AdvcTpaKommand.players.remove(p)
+                AdvcTpaKommand.tpaMap.remove(p.uniqueId)
             }
         }
     }

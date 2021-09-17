@@ -57,11 +57,11 @@ object AdvcTpaKommand {
 
     val players: HashMap<Player, BukkitTask> = hashMapOf()
 
+    val tpaMap: HashMap<UUID, UUID> = HashMap()
+
     private val server = getInstance().server
 
     private val scheduler = server.scheduler
-
-    private val tpaMap: HashMap<UUID, UUID> = HashMap()
 
     private var UUID.tpaDelay: Long
         get() {
@@ -82,6 +82,7 @@ object AdvcTpaKommand {
             target.teleport(player.location)
             target.sendMessage(text("텔레포트중입니다...", NamedTextColor.GOLD))
             players.remove(target)
+            tpaMap.remove(target.uniqueId)
         }, 200L)
 
         players[target] = task
