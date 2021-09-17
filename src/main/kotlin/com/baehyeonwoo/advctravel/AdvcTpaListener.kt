@@ -27,6 +27,7 @@ class AdvcTpaListener: Listener {
             if (from.x != to.x && from.y != to.y && from.z != to.z) {
                 players.get(p)?.cancel()
                 p.sendMessage(text("움직임이 감지되어 텔레포트가 취소되었습니다.",NamedTextColor.RED))
+                AdvcTpaKommand.players.remove(p)
             }
         }
     }
