@@ -96,6 +96,10 @@ object AdvcTpaKommand {
                     executes {
                         val target: Player by it
 
+                        val sm = Bukkit.getScoreboardManager()
+                        val sc = sm.mainScoreboard
+                        val runner = sc.getTeam("Runner")
+
                         // 얘! 배먹어라 배! 가을 배가 맛있단다!
                         if (player == target) {
                             player.sendMessage(text("얘! 너 자신에게는 텔레포트를 할 수 없단다!", NamedTextColor.RED))
@@ -104,8 +108,11 @@ object AdvcTpaKommand {
                             player.sendMessage(text("얘! 이미 다른사람에게 텔래포트 요청을 했단다!", NamedTextColor.RED))
                         }
                         else if (System.currentTimeMillis() - player.uniqueId.tpaDelay < 600000) {
-                            player.sendMessage(text("애! 지금 이 명령어는 쿨타임에 있단다!", NamedTextColor.RED))
-                            player.sendMessage(text("${TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - player.uniqueId.tpaDelay)}분 이후에 다시 시도하세요."))
+                            player.sendMessage(text("얘! 지금 이 명령어는 쿨타임에 있단다!", NamedTextColor.RED))
+                            player.sendMessage(text("${TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - player.uniqueId.tpaDelay)}분 이후에 다시 시도하세요.", NamedTextColor.RED))
+                        }
+                        else if (runner?.entries?.contains(target.name) == true){
+                            player.sendMessage(text("얘! 러너한테 텔레포트하면 그게 데스런이니?", NamedTextColor.RED))
                         }
                         else {
                             target.sendMessage(
