@@ -142,7 +142,7 @@ object AdvcTpaKommand {
                         player.sendMessage(text("받은 요청이 없습니다.",NamedTextColor.RED))
                     }
                     else if (tpaMap.keys.count { x -> x == player.uniqueId } > 1) {
-                        player.sendMessage(text("여러개의 텔레포트 요청이 있습니다. /tpaccept <player>로 요청을 수락하세요."))
+                        player.sendMessage(text("여러개의 텔레포트 요청이 있습니다. /tpaaccept <player>로 요청을 수락하세요."))
                     } else {
                         val request = tpaMap.entries.filter { x -> x.value == player.uniqueId }
                         if (request.isEmpty()) player.sendMessage(text("받은 요청이 없습니다.", NamedTextColor.RED))
