@@ -41,6 +41,7 @@ import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitTask
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.collections.HashMap
 
 /***
@@ -103,6 +104,7 @@ object AdvcTpaKommand {
                         }
                         else if (System.currentTimeMillis() - player.uniqueId.tpaDelay < 600000) {
                             player.sendMessage(text("애! 지금 이 명령어는 쿨타임에 있단다!", NamedTextColor.RED))
+                            player.sendMessage(text("${TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - player.uniqueId.tpaDelay)}분 이후에 다시 시도하세요."))
                         }
                         else {
                             target.sendMessage(
