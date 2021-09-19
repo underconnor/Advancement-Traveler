@@ -214,9 +214,10 @@ object AdvcTpaKommand {
 
                             if (sender == null) receiver.sendMessage(text("요청을 보낸 플레이어가 오프라인입니다.", NamedTextColor.RED))
                             else {
+                                players.get(sender)?.cancel()
                                 tpaMap.remove(request[0].key)
                                 receiver.sendMessage(text("${sender.name}님이 보낸 요청을 거절하였습니다.", NamedTextColor.GOLD))
-                                receiver.sendMessage(text("보낸 요청이 거절되었습니다.", NamedTextColor.RED))
+                                sender.sendMessage(text("보낸 요청이 거절되었습니다.", NamedTextColor.RED))
                             }
                         }
                     }
@@ -237,6 +238,7 @@ object AdvcTpaKommand {
 
                                 if (sender == null) player.sendMessage(text("요청을 보낸 플레이어가 오프라인입니다.", NamedTextColor.RED))
                                 else {
+                                    players.get(sender)?.cancel() // Bug?
                                     tpaMap.remove(request[0].key)
                                     player.sendMessage(text("${sender.name}님이 보낸 요청을 거절하였습니다.", NamedTextColor.GOLD))
                                     sender.sendMessage(text("보낸 요청이 거절되었습니다.", NamedTextColor.RED))
