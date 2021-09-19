@@ -108,7 +108,7 @@ object AdvcTpaKommand {
                         else if (tpaMap.containsKey(sender.uniqueId)) {
                             sender.sendMessage(text("얘! 이미 다른사람에게 텔래포트 요청을 했단다!", NamedTextColor.RED))
                         }
-                        else if (System.currentTimeMillis() - sender.uniqueId.tpaDelay < 600000) {
+                        else if (System.currentTimeMillis() - sender.uniqueId.tpaDelay < 600) {
                             sender.sendMessage(text("얘! 지금 이 명령어는 쿨타임에 있단다!", NamedTextColor.RED))
                             sender.sendMessage(text("${TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - sender.uniqueId.tpaDelay)}분 이후에 다시 시도하세요.", NamedTextColor.RED))
                         }
@@ -258,6 +258,7 @@ object AdvcTpaKommand {
 
                         receiver?.sendMessage(text("${sender.name}님이 텔레포트 요청을 취소하였습니다.",NamedTextColor.GOLD))
 
+                        players.get(sender)?.cancel()
                         tpaMap.remove(sender.uniqueId)
                         if(players.containsKey(sender)) players.remove(sender)
 
