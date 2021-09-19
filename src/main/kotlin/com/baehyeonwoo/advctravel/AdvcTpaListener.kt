@@ -14,21 +14,20 @@ class AdvcTpaListener: Listener {
 
     private val server = getInstance().server
 
-    private val scheduler = server.scheduler
-
     private val players = AdvcTpaKommand.players
+
     @EventHandler
     fun onPlayerMove(e: PlayerMoveEvent) {
-        val p = e.player
+        val sender = e.player
         val to = e.to
         val from = e.from
 
-        if(players.contains(p)) {
+        if(players.contains(sender)) {
             if (from.x != to.x && from.y != to.y && from.z != to.z) {
-                players.get(p)?.cancel()
-                p.sendMessage(text("움직임이 감지되어 텔레포트가 취소되었습니다.",NamedTextColor.RED))
-                AdvcTpaKommand.players.remove(p)
-                AdvcTpaKommand.tpaMap.remove(p.uniqueId)
+                players.get(sender)?.cancel()
+                sender.sendMessage(text("움직임이 감지되어 텔레포트가 취소되었습니다.",NamedTextColor.RED))
+                AdvcTpaKommand.players.remove(sender)
+                AdvcTpaKommand.tpaMap.remove(sender.uniqueId)
             }
         }
     }
