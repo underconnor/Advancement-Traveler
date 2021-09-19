@@ -258,6 +258,7 @@ object AdvcTpaKommand {
 
                         receiver?.sendMessage(text("${sender.name}님이 텔레포트 요청을 취소하였습니다.",NamedTextColor.GOLD))
 
+                        players.get(sender)?.cancel()
                         tpaMap.remove(sender.uniqueId)
                         if(players.containsKey(sender)) players.remove(sender)
 
