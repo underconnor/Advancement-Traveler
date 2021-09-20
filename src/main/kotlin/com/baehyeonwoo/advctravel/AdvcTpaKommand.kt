@@ -163,7 +163,10 @@ object AdvcTpaKommand {
                         else {
                             val target = Bukkit.getPlayer(request[0].key)
 
-                            if (target == null) receiver.sendMessage(text("요청을 보낸 플레이어가 오프라인입니다.", NamedTextColor.RED))
+                            if (target == null) {
+                                receiver.sendMessage(text("요청을 보낸 플레이어가 오프라인입니다.", NamedTextColor.RED))
+                                tpaMap.remove(request[0].key)
+                            }
                             else {
                                 tpa(receiver, target)
                             }
@@ -186,7 +189,10 @@ object AdvcTpaKommand {
 
                             else {
                                 val sender = Bukkit.getPlayer(request[0].key)
-                                if (sender == null) player.sendMessage(text("요청을 보낸 플레이어가 오프라인입니다.", NamedTextColor.RED))
+                                if (sender == null) {
+                                    player.sendMessage(text("요청을 보낸 플레이어가 오프라인입니다.", NamedTextColor.RED))
+                                    tpaMap.remove(request[0].key)
+                                }
                                 else {
                                     tpa(receiver, sender)
                                 }
@@ -212,9 +218,12 @@ object AdvcTpaKommand {
                         else {
                             val sender = Bukkit.getPlayer(request[0].key)
 
-                            if (sender == null) receiver.sendMessage(text("요청을 보낸 플레이어가 오프라인입니다.", NamedTextColor.RED))
+                            if (sender == null) {
+                                receiver.sendMessage(text("요청을 보낸 플레이어가 오프라인입니다.", NamedTextColor.RED))
+                                tpaMap.remove(request[0].key)
+                            }
                             else {
-                                players.get(sender)?.cancel()
+                                if(players.contains(sender)) players.get(sender)?.cancel()
                                 tpaMap.remove(request[0].key)
                                 receiver.sendMessage(text("${sender.name}님이 보낸 요청을 거절하였습니다.", NamedTextColor.GOLD))
                                 sender.sendMessage(text("보낸 요청이 거절되었습니다.", NamedTextColor.RED))
@@ -236,9 +245,12 @@ object AdvcTpaKommand {
                             else {
                                 val sender = Bukkit.getPlayer(request[0].key)
 
-                                if (sender == null) player.sendMessage(text("요청을 보낸 플레이어가 오프라인입니다.", NamedTextColor.RED))
+                                if (sender == null) {
+                                    player.sendMessage(text("요청을 보낸 플레이어가 오프라인입니다.", NamedTextColor.RED))
+                                    tpaMap.remove(request[0].key)
+                                }
                                 else {
-                                    players.get(sender)?.cancel() // Bug?
+                                    if(players.contains(sender)) players.get(sender)?.cancel()
                                     tpaMap.remove(request[0].key)
                                     player.sendMessage(text("${sender.name}님이 보낸 요청을 거절하였습니다.", NamedTextColor.GOLD))
                                     sender.sendMessage(text("보낸 요청이 거절되었습니다.", NamedTextColor.RED))
@@ -260,9 +272,12 @@ object AdvcTpaKommand {
 
                         receiver?.sendMessage(text("${sender.name}님이 텔레포트 요청을 취소하였습니다.",NamedTextColor.GOLD))
 
-                        players.get(sender)?.cancel()
                         tpaMap.remove(sender.uniqueId)
-                        if(players.containsKey(sender)) players.remove(sender)
+
+                        if(players.containsKey(sender)) {
+                            players.remove(sender)
+                            players[sender]?.cancel()
+                        }
 
                         sender.sendMessage(text("${receiver?.name}님에게 보낸 텔레포트 요청을 취소하였습니다.", NamedTextColor.GOLD))
                     }
