@@ -42,7 +42,9 @@ class AdvcTravelMain : JavaPlugin() {
         AdvcTravelConfig.load(configFile)
         logger.info("Config Administrator Settings: ${config.getString("administrator")}")
         logger.info("Config Runner Settings: ${config.getString("runner")}")
-        server.maxPlayers = config.getInt("maxplayers")
+        server.maxPlayers = config.getInt("maxplayers") + server.onlinePlayers.asSequence().filter {
+            config.getString("administrator").toString().contains(it.uniqueId.toString())
+        }.toMutableList().size
         server.pluginManager.registerEvents(AdvcTravelEvent(), this)
         server.pluginManager.registerEvents(AdvcTpaListener(), this)
         AdvcTravelKommand.advcTravelKommand()
