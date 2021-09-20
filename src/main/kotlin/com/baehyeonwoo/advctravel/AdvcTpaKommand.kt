@@ -56,7 +56,7 @@ object AdvcTpaKommand {
         return AdvcTravelMain.instance
     }
 
-    val players: HashMap<Player, BukkitTask> = hashMapOf()
+    val players: List<AdvcTpaReady> = listOf()
 
     val tpaMap: HashMap<UUID, UUID> = HashMap()
 
@@ -86,17 +86,19 @@ object AdvcTpaKommand {
 
     private fun tpa(receiver: Player, sender: Player) {
 
-        sender.sendMessage(text("10초간 움직이지 마세요, 텔레포트중입니다...", NamedTextColor.GOLD))
+        sender.sendMessage(text("30초간 움직이지 마세요, 텔레포트중입니다...", NamedTextColor.GOLD))
         val task = scheduler.runTaskLater(getInstance(), Runnable {
             sender.uniqueId.sendTpaDely = System.currentTimeMillis()
             receiver.uniqueId.receiveTpaDelay = System.currentTimeMillis()
             sender.teleport(receiver.location)
             sender.sendMessage(text("텔레포트중입니다...", NamedTextColor.GOLD))
-            players.remove(sender)
+            players.forEach { x ->
+                if(x.sender == sender && x.receiver == receiver) players.minus(x)
+            }
             tpaMap.remove(sender.uniqueId)
-        }, 600L) //30초
+        }, 600L)
 
-        players[sender] = task
+        players.plus(AdvcTpaReady(sender, receiver, task))
     }
 
     fun advcTpaKommand() {
@@ -162,7 +164,7 @@ object AdvcTpaKommand {
                 executes {
                     val receiver = player
 
-                    if (System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay < 300000) { //5분
+                    if (System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay < 180000) {
                         receiver.sendMessage(text("얘! 지금 이 명령어는 쿨타임에 있단다!", NamedTextColor.RED))
                         receiver.sendMessage(text("${TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay)}분 이후에 다시 시도하세요.", NamedTextColor.RED))
                     }
@@ -193,7 +195,7 @@ object AdvcTpaKommand {
                     executes {
                         val receiver = player
 
-                        if (System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay < 300000) { //5분
+                        if (System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay < 180000) {
                             receiver.sendMessage(text("얘! 지금 이 명령어는 쿨타임에 있단다!", NamedTextColor.RED))
                             receiver.sendMessage(text("${TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay)}분 이후에 다시 시도하세요.", NamedTextColor.RED))
                         }
@@ -225,7 +227,7 @@ object AdvcTpaKommand {
                 executes {
                     val receiver = player
 
-                    if (System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay < 300000) { //5분
+                    if (System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay < 180000) {
                         receiver.sendMessage(text("얘! 지금 이 명령어는 쿨타임에 있단다!", NamedTextColor.RED))
                         receiver.sendMessage(text("${TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay)}분 이후에 다시 시도하세요.", NamedTextColor.RED))
                     }
@@ -246,7 +248,9 @@ object AdvcTpaKommand {
                                 tpaMap.remove(request[0].key)
                             }
                             else {
-                                if(players.contains(sender)) players.get(sender)?.cancel()
+                                if(players.any {x -> x.sender == sender && x.receiver == receiver}) players.forEach { x ->
+                                    if(x.sender == sender && x.receiver == receiver) x.task.cancel()
+                                }
                                 tpaMap.remove(request[0].key)
                                 receiver.sendMessage(text("${sender.name}님이 보낸 요청을 거절하였습니다.", NamedTextColor.GOLD))
                                 sender.sendMessage(text("보낸 요청이 거절되었습니다.", NamedTextColor.RED))
@@ -259,7 +263,7 @@ object AdvcTpaKommand {
                     executes {
                         val receiver = player
 
-                        if (System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay < 300000) { //5분
+                        if (System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay < 180000) {
                             receiver.sendMessage(text("얘! 지금 이 명령어는 쿨타임에 있단다!", NamedTextColor.RED))
                             receiver.sendMessage(text("${TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay)}분 이후에 다시 시도하세요.", NamedTextColor.RED))
                         }
@@ -277,7 +281,9 @@ object AdvcTpaKommand {
                                     tpaMap.remove(request[0].key)
                                 }
                                 else {
-                                    if(players.contains(sender)) players.get(sender)?.cancel()
+                                    if(players.any {x -> x.sender == sender && x.receiver == receiver}) players.forEach { x ->
+                                        if(x.sender == sender && x.receiver == receiver) x.task.cancel()
+                                    }
                                     tpaMap.remove(request[0].key)
                                     player.sendMessage(text("${sender.name}님이 보낸 요청을 거절하였습니다.", NamedTextColor.GOLD))
                                     sender.sendMessage(text("보낸 요청이 거절되었습니다.", NamedTextColor.RED))
@@ -294,16 +300,18 @@ object AdvcTpaKommand {
 
                     if(!tpaMap.containsKey(sender.uniqueId)) sender.sendMessage(text("얘! 없는 요청을 취소할 순 없단다 맨이야!", NamedTextColor.RED))
                     else{
-                        val receiverId = tpaMap[sender.uniqueId]
-                        val receiver = Bukkit.getPlayer(receiverId!!)
+                        val receiverId = tpaMap[sender.uniqueId]!!
+                        val receiver = Bukkit.getPlayer(receiverId)
 
                         receiver?.sendMessage(text("${sender.name}님이 텔레포트 요청을 취소하였습니다.",NamedTextColor.GOLD))
 
                         tpaMap.remove(sender.uniqueId)
 
-                        if(players.containsKey(sender)) {
-                            players.remove(sender)
-                            players[sender]?.cancel()
+                        if(players.any {x -> x.sender == sender && x.receiver == receiver}) players.forEach { x ->
+                            if(x.sender == sender && x.receiver == receiver) {
+                                players.minus(x)
+                                x.task.cancel()
+                            }
                         }
 
                         sender.sendMessage(text("${receiver?.name}님에게 보낸 텔레포트 요청을 취소하였습니다.", NamedTextColor.GOLD))
