@@ -32,6 +32,7 @@
 
 package com.baehyeonwoo.advctravel
 
+import com.baehyeonwoo.advctravel.AdvcTpaKommand.sendTpaDely
 import io.github.monun.kommand.getValue
 import io.github.monun.kommand.kommand
 import net.kyori.adventure.text.Component.text
@@ -63,27 +64,37 @@ object AdvcTpaKommand {
 
     private val scheduler = server.scheduler
 
-    private var UUID.tpaDelay: Long
+    private var UUID.sendTpaDely: Long
         get() {
-            return timestamps[this] ?: 0
+            return sendTimestamps[this] ?: 0
         }
         set(value) {
-            timestamps[this] = value
+            sendTimestamps[this] = value
         }
 
-    private val timestamps = HashMap<UUID, Long>()
+    private val sendTimestamps = HashMap<UUID, Long>()
 
+    private var UUID.receiveTpaDelay: Long
+        get() {
+            return receiveTimestamps[this] ?: 0
+        }
+        set(value) {
+            receiveTimestamps[this] = value
+        }
+
+    private val receiveTimestamps = HashMap<UUID, Long>()
 
     private fun tpa(receiver: Player, sender: Player) {
 
         sender.sendMessage(text("10초간 움직이지 마세요, 텔레포트중입니다...", NamedTextColor.GOLD))
         val task = scheduler.runTaskLater(getInstance(), Runnable {
-            sender.uniqueId.tpaDelay = System.currentTimeMillis()
+            sender.uniqueId.sendTpaDely = System.currentTimeMillis()
+            receiver.uniqueId.receiveTpaDelay = System.currentTimeMillis()
             sender.teleport(receiver.location)
             sender.sendMessage(text("텔레포트중입니다...", NamedTextColor.GOLD))
             players.remove(sender)
             tpaMap.remove(sender.uniqueId)
-        }, 200L)
+        }, 600L) //30초
 
         players[sender] = task
     }
@@ -108,9 +119,9 @@ object AdvcTpaKommand {
                         else if (tpaMap.containsKey(sender.uniqueId)) {
                             sender.sendMessage(text("얘! 이미 다른사람에게 텔래포트 요청을 했단다!", NamedTextColor.RED))
                         }
-                        else if (System.currentTimeMillis() - sender.uniqueId.tpaDelay < 600000) {
+                        else if (System.currentTimeMillis() - sender.uniqueId.sendTpaDely < 1200000) { //20분
                             sender.sendMessage(text("얘! 지금 이 명령어는 쿨타임에 있단다!", NamedTextColor.RED))
-                            sender.sendMessage(text("${TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - sender.uniqueId.tpaDelay)}분 이후에 다시 시도하세요.", NamedTextColor.RED))
+                            sender.sendMessage(text("${TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - sender.uniqueId.sendTpaDely)}분 이후에 다시 시도하세요.", NamedTextColor.RED))
                         }
                         else if (runner?.entries?.contains(receiver.name) == true){
                             sender.sendMessage(text("얘! 러너한테 텔레포트하면 그게 데스런이니?", NamedTextColor.RED))
@@ -151,7 +162,11 @@ object AdvcTpaKommand {
                 executes {
                     val receiver = player
 
-                    if(tpaMap.keys.isEmpty()){
+                    if (System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay < 300000) { //5분
+                        receiver.sendMessage(text("얘! 지금 이 명령어는 쿨타임에 있단다!", NamedTextColor.RED))
+                        receiver.sendMessage(text("${TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay)}분 이후에 다시 시도하세요.", NamedTextColor.RED))
+                    }
+                    else if(tpaMap.keys.isEmpty()){
                         receiver.sendMessage(text("받은 요청이 없습니다.",NamedTextColor.RED))
                     }
                     else if (tpaMap.keys.count { x -> x == receiver.uniqueId } > 1) {
@@ -178,7 +193,11 @@ object AdvcTpaKommand {
                     executes {
                         val receiver = player
 
-                        if(tpaMap.keys.isEmpty()){
+                        if (System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay < 300000) { //5분
+                            receiver.sendMessage(text("얘! 지금 이 명령어는 쿨타임에 있단다!", NamedTextColor.RED))
+                            receiver.sendMessage(text("${TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay)}분 이후에 다시 시도하세요.", NamedTextColor.RED))
+                        }
+                        else if(tpaMap.keys.isEmpty()){
                             receiver.sendMessage(text("받은 요청이 없습니다.",NamedTextColor.RED))
                         }
                         else {
@@ -206,7 +225,11 @@ object AdvcTpaKommand {
                 executes {
                     val receiver = player
 
-                    if(tpaMap.keys.isEmpty()){
+                    if (System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay < 300000) { //5분
+                        receiver.sendMessage(text("얘! 지금 이 명령어는 쿨타임에 있단다!", NamedTextColor.RED))
+                        receiver.sendMessage(text("${TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay)}분 이후에 다시 시도하세요.", NamedTextColor.RED))
+                    }
+                    else if(tpaMap.keys.isEmpty()){
                         receiver.sendMessage(text("받은 요청이 없습니다.",NamedTextColor.RED))
                     }
                     else if (tpaMap.keys.count { x -> x == receiver.uniqueId } > 1) {
@@ -236,7 +259,11 @@ object AdvcTpaKommand {
                     executes {
                         val receiver = player
 
-                        if(tpaMap.keys.isEmpty()) receiver.sendMessage(text("받은 요청이 없습니다.",NamedTextColor.RED))
+                        if (System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay < 300000) { //5분
+                            receiver.sendMessage(text("얘! 지금 이 명령어는 쿨타임에 있단다!", NamedTextColor.RED))
+                            receiver.sendMessage(text("${TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay)}분 이후에 다시 시도하세요.", NamedTextColor.RED))
+                        }
+                        else if(tpaMap.keys.isEmpty()) receiver.sendMessage(text("받은 요청이 없습니다.",NamedTextColor.RED))
                         else {
                             val select: Player by it
                             val request = tpaMap.entries.filter { x -> x.value == receiver.uniqueId && x.key == select.uniqueId }
