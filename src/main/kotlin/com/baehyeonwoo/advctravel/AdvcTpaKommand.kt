@@ -56,7 +56,7 @@ object AdvcTpaKommand {
         return AdvcTravelMain.instance
     }
 
-    val players: HashMap<AdvcTpaReady, BukkitTask> = HashMap()
+    val players: HashMap<String, BukkitTask> = HashMap()
 
     val tpaMap: HashMap<UUID, UUID> = HashMap()
 
@@ -92,11 +92,11 @@ object AdvcTpaKommand {
             receiver.uniqueId.receiveTpaDelay = System.currentTimeMillis()
             sender.teleport(receiver.location)
             sender.sendMessage(text("텔레포트중입니다...", NamedTextColor.GOLD))
-            players.remove(AdvcTpaReady(sender, receiver))
+            players.remove("${sender.uniqueId}/${receiver.uniqueId}")
             tpaMap.remove(sender.uniqueId)
         }, 600L)
 
-        players[AdvcTpaReady(sender, receiver)] = task
+        players["${sender.uniqueId}/${receiver.uniqueId}"] = task
     }
 
     fun advcTpaKommand() {
@@ -246,7 +246,7 @@ object AdvcTpaKommand {
                                 tpaMap.remove(request[0].key)
                             }
                             else {
-                                if(players.containsKey(AdvcTpaReady(sender, receiver))) players[AdvcTpaReady(sender, receiver)]?.cancel()
+                                if(players.containsKey("${sender.uniqueId}/${receiver.uniqueId}")) players.remove("${sender.uniqueId}/${receiver.uniqueId}")
                                 tpaMap.remove(request[0].key)
                                 receiver.sendMessage(text("${sender.name}님이 보낸 요청을 거절하였습니다.", NamedTextColor.GOLD))
                                 sender.sendMessage(text("보낸 요청이 거절되었습니다.", NamedTextColor.RED))
@@ -277,7 +277,7 @@ object AdvcTpaKommand {
                                     tpaMap.remove(request[0].key)
                                 }
                                 else {
-                                    if(players.containsKey(AdvcTpaReady(sender, receiver))) players[AdvcTpaReady(sender, receiver)]?.cancel()
+                                    if(players.containsKey("${sender.uniqueId}/${receiver.uniqueId}")) players["${sender.uniqueId}/${receiver.uniqueId}"]?.cancel()
                                     tpaMap.remove(request[0].key)
                                     player.sendMessage(text("${sender.name}님이 보낸 요청을 거절하였습니다.", NamedTextColor.GOLD))
                                     sender.sendMessage(text("보낸 요청이 거절되었습니다.", NamedTextColor.RED))
@@ -301,9 +301,9 @@ object AdvcTpaKommand {
 
                         tpaMap.remove(sender.uniqueId)
 
-                        if(players.containsKey(AdvcTpaReady(sender, receiver))) {
-                            players[AdvcTpaReady(sender, receiver)]?.cancel()
-                            players.remove(AdvcTpaReady(sender, receiver))
+                        if(players.containsKey("${sender.uniqueId}/${receiver.uniqueId}")) {
+                            players["${sender.uniqueId}/${receiver.uniqueId}"]?.cancel()
+                            players.remove("${sender.uniqueId}/${receiver.uniqueId}")
                         }
 
                         sender.sendMessage(text("${receiver.name}님에게 보낸 텔레포트 요청을 취소하였습니다.", NamedTextColor.GOLD))
