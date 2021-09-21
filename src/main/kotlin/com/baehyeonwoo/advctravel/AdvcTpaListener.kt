@@ -30,6 +30,7 @@ class AdvcTpaListener: Listener {
                 val receiver = players.keys.filter { x -> x.sender == sender }[0].receiver
 
                 players[AdvcTpaReady(sender, receiver)]?.cancel()
+                players.remove(AdvcTpaReady(sender, receiver))
                 AdvcTpaKommand.tpaMap.remove(p.uniqueId)
             }
         }
@@ -41,7 +42,7 @@ class AdvcTpaListener: Listener {
                 val sender = players.keys.filter { x -> x.receiver == receiver }[0].sender
 
                 players[AdvcTpaReady(sender, receiver)]?.cancel()
-
+                players.remove(AdvcTpaReady(sender, receiver))
                 AdvcTpaKommand.tpaMap.remove(p.uniqueId)
             }
         }
