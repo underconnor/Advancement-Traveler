@@ -252,7 +252,10 @@ object AdvcTpaKommand {
                                 tpaMap.remove(request[0].key)
                             }
                             else {
-                                if(players.containsKey("${sender.uniqueId}/${receiver.uniqueId}")) players.remove("${sender.uniqueId}/${receiver.uniqueId}")
+                                if(players.containsKey("${sender.uniqueId}/${receiver.uniqueId}")) {
+                                    players["${sender.uniqueId}/${receiver.uniqueId}"]?.cancel()
+                                    players.remove("${sender.uniqueId}/${receiver.uniqueId}")
+                                }
                                 tpaMap.remove(request[0].key)
                                 receiver.sendMessage(text("${sender.name}님이 보낸 요청을 거절하였습니다.", NamedTextColor.GOLD))
                                 sender.sendMessage(text("보낸 요청이 거절되었습니다.", NamedTextColor.RED))
@@ -283,7 +286,10 @@ object AdvcTpaKommand {
                                     tpaMap.remove(request[0].key)
                                 }
                                 else {
-                                    if(players.containsKey("${sender.uniqueId}/${receiver.uniqueId}")) players["${sender.uniqueId}/${receiver.uniqueId}"]?.cancel()
+                                    if(players.containsKey("${sender.uniqueId}/${receiver.uniqueId}")){
+                                        players["${sender.uniqueId}/${receiver.uniqueId}"]?.cancel()
+                                        players.remove("${sender.uniqueId}/${receiver.uniqueId}")
+                                    }
                                     tpaMap.remove(request[0].key)
                                     player.sendMessage(text("${sender.name}님이 보낸 요청을 거절하였습니다.", NamedTextColor.GOLD))
                                     sender.sendMessage(text("보낸 요청이 거절되었습니다.", NamedTextColor.RED))
