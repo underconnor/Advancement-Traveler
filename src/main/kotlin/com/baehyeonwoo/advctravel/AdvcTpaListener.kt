@@ -22,13 +22,26 @@ class AdvcTpaListener: Listener {
         val to = e.to
         val from = e.from
 
-        if(players.any { x -> x.sender == p || x.receiver == p }) {
+        if(players.keys.any { x -> x.sender == p }) {
             if (from.x != to.x && from.y != to.y && from.z != to.z) {
                 p.sendMessage(text("움직임이 감지되어 텔레포트가 취소되었습니다.",NamedTextColor.RED))
-                players.forEach { x ->
-                    players.minus(x)
-                    x.task.cancel()
-                }
+
+                val sender = p
+                val receiver = players.keys.filter { x -> x.sender == sender }[0].receiver
+
+                players[AdvcTpaReady(sender, receiver)]?.cancel()
+                AdvcTpaKommand.tpaMap.remove(p.uniqueId)
+            }
+        }
+        else if(players.keys.any { x -> x.receiver == p }) {
+            if (from.x != to.x && from.y != to.y && from.z != to.z) {
+                p.sendMessage(text("움직임이 감지되어 텔레포트가 취소되었습니다.",NamedTextColor.RED))
+
+                val receiver = p
+                val sender = players.keys.filter { x -> x.receiver == receiver }[0].sender
+
+                players[AdvcTpaReady(sender, receiver)]?.cancel()
+
                 AdvcTpaKommand.tpaMap.remove(p.uniqueId)
             }
         }

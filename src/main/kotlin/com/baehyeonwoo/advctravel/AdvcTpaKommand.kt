@@ -56,7 +56,7 @@ object AdvcTpaKommand {
         return AdvcTravelMain.instance
     }
 
-    val players: List<AdvcTpaReady> = listOf()
+    val players: HashMap<AdvcTpaReady, BukkitTask> = HashMap()
 
     val tpaMap: HashMap<UUID, UUID> = HashMap()
 
@@ -92,13 +92,11 @@ object AdvcTpaKommand {
             receiver.uniqueId.receiveTpaDelay = System.currentTimeMillis()
             sender.teleport(receiver.location)
             sender.sendMessage(text("텔레포트중입니다...", NamedTextColor.GOLD))
-            players.forEach { x ->
-                if(x.sender == sender && x.receiver == receiver) players.minus(x)
-            }
+            players.remove(AdvcTpaReady(sender, receiver))
             tpaMap.remove(sender.uniqueId)
         }, 600L)
 
-        players.plus(AdvcTpaReady(sender, receiver, task))
+        players[AdvcTpaReady(sender, receiver)] = task
     }
 
     fun advcTpaKommand() {
@@ -248,9 +246,7 @@ object AdvcTpaKommand {
                                 tpaMap.remove(request[0].key)
                             }
                             else {
-                                if(players.any {x -> x.sender == sender && x.receiver == receiver}) players.forEach { x ->
-                                    if(x.sender == sender && x.receiver == receiver) x.task.cancel()
-                                }
+                                if(players.containsKey(AdvcTpaReady(sender, receiver))) players[AdvcTpaReady(sender, receiver)]?.cancel()
                                 tpaMap.remove(request[0].key)
                                 receiver.sendMessage(text("${sender.name}님이 보낸 요청을 거절하였습니다.", NamedTextColor.GOLD))
                                 sender.sendMessage(text("보낸 요청이 거절되었습니다.", NamedTextColor.RED))
@@ -281,9 +277,7 @@ object AdvcTpaKommand {
                                     tpaMap.remove(request[0].key)
                                 }
                                 else {
-                                    if(players.any {x -> x.sender == sender && x.receiver == receiver}) players.forEach { x ->
-                                        if(x.sender == sender && x.receiver == receiver) x.task.cancel()
-                                    }
+                                    if(players.containsKey(AdvcTpaReady(sender, receiver))) players[AdvcTpaReady(sender, receiver)]?.cancel()
                                     tpaMap.remove(request[0].key)
                                     player.sendMessage(text("${sender.name}님이 보낸 요청을 거절하였습니다.", NamedTextColor.GOLD))
                                     sender.sendMessage(text("보낸 요청이 거절되었습니다.", NamedTextColor.RED))
@@ -301,20 +295,18 @@ object AdvcTpaKommand {
                     if(!tpaMap.containsKey(sender.uniqueId)) sender.sendMessage(text("얘! 없는 요청을 취소할 순 없단다 맨이야!", NamedTextColor.RED))
                     else{
                         val receiverId = tpaMap[sender.uniqueId]!!
-                        val receiver = Bukkit.getPlayer(receiverId)
+                        val receiver = Bukkit.getPlayer(receiverId)!!
 
-                        receiver?.sendMessage(text("${sender.name}님이 텔레포트 요청을 취소하였습니다.",NamedTextColor.GOLD))
+                        receiver.sendMessage(text("${sender.name}님이 텔레포트 요청을 취소하였습니다.",NamedTextColor.GOLD))
 
                         tpaMap.remove(sender.uniqueId)
 
-                        if(players.any {x -> x.sender == sender && x.receiver == receiver}) players.forEach { x ->
-                            if(x.sender == sender && x.receiver == receiver) {
-                                players.minus(x)
-                                x.task.cancel()
-                            }
+                        if(players.containsKey(AdvcTpaReady(sender, receiver))) {
+                            players[AdvcTpaReady(sender, receiver)]?.cancel()
+                            players.remove(AdvcTpaReady(sender, receiver))
                         }
 
-                        sender.sendMessage(text("${receiver?.name}님에게 보낸 텔레포트 요청을 취소하였습니다.", NamedTextColor.GOLD))
+                        sender.sendMessage(text("${receiver.name}님에게 보낸 텔레포트 요청을 취소하였습니다.", NamedTextColor.GOLD))
                     }
                 }
             }
