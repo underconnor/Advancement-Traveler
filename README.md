@@ -34,3 +34,4 @@ Large-scale Viewer-participating Content Plugin for [komq](https://youtube.com/ì
 
 - [[PatrickKR](https://github.com/patrick-choe)]
 - [[FSanchir](https://github.com/fsanchir)]
+- [[_Connor](https://github.com/underconnor)]

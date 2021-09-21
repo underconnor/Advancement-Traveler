@@ -122,7 +122,7 @@ object AdvcTpaKommand {
                         }
                         else if (System.currentTimeMillis() - sender.uniqueId.sendTpaDely < 1200000) { //20분
                             sender.sendMessage(text("얘! 지금 이 명령어는 쿨타임에 있단다!", NamedTextColor.RED))
-                            sender.sendMessage(text("${TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - sender.uniqueId.sendTpaDely)}분 이후에 다시 시도하세요.", NamedTextColor.RED))
+                            sender.sendMessage(text("${20 - TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - sender.uniqueId.sendTpaDely)}분 이후에 다시 시도하세요.", NamedTextColor.RED))
                         }
                         else if (runner?.entries?.contains(receiver.name) == true){
                             sender.sendMessage(text("얘! 러너한테 텔레포트하면 그게 데스런이니?", NamedTextColor.RED))
@@ -168,7 +168,7 @@ object AdvcTpaKommand {
 
                     if (System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay < 180000) {
                         receiver.sendMessage(text("얘! 지금 이 명령어는 쿨타임에 있단다!", NamedTextColor.RED))
-                        receiver.sendMessage(text("${TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay)}분 이후에 다시 시도하세요.", NamedTextColor.RED))
+                        receiver.sendMessage(text("${3 - TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay)}분 이후에 다시 시도하세요.", NamedTextColor.RED))
                     }
                     else if(tpaMap.keys.isEmpty()){
                         receiver.sendMessage(text("받은 요청이 없습니다.",NamedTextColor.RED))
@@ -199,7 +199,7 @@ object AdvcTpaKommand {
 
                         if (System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay < 180000) {
                             receiver.sendMessage(text("얘! 지금 이 명령어는 쿨타임에 있단다!", NamedTextColor.RED))
-                            receiver.sendMessage(text("${TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay)}분 이후에 다시 시도하세요.", NamedTextColor.RED))
+                            receiver.sendMessage(text("${3 - TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay)}분 이후에 다시 시도하세요.", NamedTextColor.RED))
                         }
                         else if(tpaMap.keys.isEmpty()){
                             receiver.sendMessage(text("받은 요청이 없습니다.",NamedTextColor.RED))
@@ -231,7 +231,7 @@ object AdvcTpaKommand {
 
                     if (System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay < 180000) {
                         receiver.sendMessage(text("얘! 지금 이 명령어는 쿨타임에 있단다!", NamedTextColor.RED))
-                        receiver.sendMessage(text("${TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay)}분 이후에 다시 시도하세요.", NamedTextColor.RED))
+                        receiver.sendMessage(text("${3 - TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay)}분 이후에 다시 시도하세요.", NamedTextColor.RED))
                     }
                     else if(tpaMap.keys.isEmpty()){
                         receiver.sendMessage(text("받은 요청이 없습니다.",NamedTextColor.RED))
@@ -265,7 +265,7 @@ object AdvcTpaKommand {
 
                         if (System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay < 180000) {
                             receiver.sendMessage(text("얘! 지금 이 명령어는 쿨타임에 있단다!", NamedTextColor.RED))
-                            receiver.sendMessage(text("${TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay)}분 이후에 다시 시도하세요.", NamedTextColor.RED))
+                            receiver.sendMessage(text("${3 - TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay)}분 이후에 다시 시도하세요.", NamedTextColor.RED))
                         }
                         else if(tpaMap.keys.isEmpty()) receiver.sendMessage(text("받은 요청이 없습니다.",NamedTextColor.RED))
                         else {
