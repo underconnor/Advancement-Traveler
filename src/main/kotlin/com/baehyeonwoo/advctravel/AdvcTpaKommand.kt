@@ -151,9 +151,11 @@ object AdvcTpaKommand {
 
                             scheduler.runTaskLater(getInstance(), Runnable {
                                 val x = tpaMap[sender.uniqueId]
-                                if (x != null) {
+                                val y = players["${sender.uniqueId}/${receiver.uniqueId}"]
+                                if (x != null && y == null) {
                                     tpaMap.remove(sender.uniqueId)
                                     sender.sendMessage(text("요청이 만료되었습니다.", NamedTextColor.GOLD))
+                                    receiver.sendMessage(text("${sender.name}님의 요청이 만료되었습니다.", NamedTextColor.GOLD))
                                 }
                             }, 2400L)
                         }
