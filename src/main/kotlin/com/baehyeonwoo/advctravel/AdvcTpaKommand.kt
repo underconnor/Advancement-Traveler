@@ -188,6 +188,9 @@ object AdvcTpaKommand {
                                 receiver.sendMessage(text("요청을 보낸 플레이어가 오프라인입니다.", NamedTextColor.RED))
                                 tpaMap.remove(request[0].key)
                             }
+                            else if (players["${target.uniqueId}/${receiver.uniqueId}"] != null) {
+                                player.sendMessage(text("이미 요청을 수락하셨습니다.",NamedTextColor.RED))
+                            }
                             else {
                                 tpa(receiver, target)
                             }
@@ -217,6 +220,9 @@ object AdvcTpaKommand {
                                 if (sender == null) {
                                     player.sendMessage(text("요청을 보낸 플레이어가 오프라인입니다.", NamedTextColor.RED))
                                     tpaMap.remove(request[0].key)
+                                }
+                                else if (players["${sender.uniqueId}/${receiver.uniqueId}"] != null) {
+                                    player.sendMessage(text("이미 요청을 수락하셨습니다.",NamedTextColor.RED))
                                 }
                                 else {
                                     tpa(receiver, sender)
