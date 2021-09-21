@@ -87,6 +87,7 @@ object AdvcTpaKommand {
     private fun tpa(receiver: Player, sender: Player) {
 
         sender.sendMessage(text("30초간 움직이지 마세요, 텔레포트중입니다...", NamedTextColor.GOLD))
+        receiver.sendMessage(text("30초간 움직이지 마세요, 텔레포트중입니다...", NamedTextColor.GOLD))
         val task = scheduler.runTaskLater(getInstance(), Runnable {
             sender.uniqueId.sendTpaDely = System.currentTimeMillis()
             receiver.uniqueId.receiveTpaDelay = System.currentTimeMillis()
@@ -125,6 +126,9 @@ object AdvcTpaKommand {
                         }
                         else if (runner?.entries?.contains(receiver.name) == true){
                             sender.sendMessage(text("얘! 러너한테 텔레포트하면 그게 데스런이니?", NamedTextColor.RED))
+                        }
+                        else if(runner?.entries?.contains(sender.name) == true){
+                            sender.sendMessage(text("얘! 러너가 텔레포트하면 그게 데스런이니?", NamedTextColor.RED))
                         }
                         else {
                             receiver.sendMessage(

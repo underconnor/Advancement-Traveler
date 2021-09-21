@@ -14,8 +14,6 @@ class AdvcTpaListener: Listener {
         return AdvcTravelMain.instance
     }
 
-    private val server = getInstance().server
-
     private val players = AdvcTpaKommand.players
 
     @EventHandler
@@ -26,10 +24,11 @@ class AdvcTpaListener: Listener {
 
         if(players.keys.any { x -> p.uniqueId.toString() == x.split('/')[0]} ) {
             if (from.x != to.x && from.y != to.y && from.z != to.z) {
-                p.sendMessage(text("움직임이 감지되어 텔레포트가 취소되었습니다.",NamedTextColor.RED))
-
                 val sender = p
-                val receiver = Bukkit.getPlayer(players.keys.filter { x -> sender.uniqueId.toString() == x.split('/')[0] }[0].split('/')[1])
+                val receiver = Bukkit.getPlayer(UUID.fromString(players.keys.first { x -> sender.uniqueId.toString() == x.split('/')[0] }.split('/')[1]))
+
+                sender.sendMessage(text("움직임이 감지되어 텔레포트가 취소되었습니다. ",NamedTextColor.RED))
+                receiver?.sendMessage(text("상대방의 움직임이 감지되어 텔레포트가 취소되었습니다. ",NamedTextColor.RED))
 
                 players["${sender.uniqueId}/${receiver?.uniqueId}"]?.cancel()
                 players.remove("${sender.uniqueId}/${receiver?.uniqueId}")
@@ -38,10 +37,11 @@ class AdvcTpaListener: Listener {
         }
         else if(players.keys.any { x -> p.uniqueId.toString() == x.split('/')[1]}) {
             if (from.x != to.x && from.y != to.y && from.z != to.z) {
-                p.sendMessage(text("움직임이 감지되어 텔레포트가 취소되었습니다.",NamedTextColor.RED))
-
                 val receiver = p
-                val sender = Bukkit.getPlayer(players.keys.filter { x -> receiver.uniqueId.toString() == x.split('/')[1] }[0].split('/')[0])
+                val sender = Bukkit.getPlayer(UUID.fromString(players.keys.first { x -> receiver.uniqueId.toString() == x.split('/')[1] }.split('/')[0]))
+
+                sender?.sendMessage(text("상대방의 움직임이 감지되어 텔레포트가 취소되었습니다. ",NamedTextColor.RED))
+                receiver.sendMessage(text("움직임이 감지되어 텔레포트가 취소되었습니다. ",NamedTextColor.RED))
 
                 players["${sender?.uniqueId}/${receiver.uniqueId}"]?.cancel()
                 players.remove("${sender?.uniqueId}/${receiver.uniqueId}")
