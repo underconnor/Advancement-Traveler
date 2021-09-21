@@ -30,6 +30,7 @@ class AdvcTpaListener: Listener {
                 sender.sendMessage(text("움직임이 감지되어 텔레포트가 취소되었습니다. ",NamedTextColor.RED))
                 receiver?.sendMessage(text("상대방의 움직임이 감지되어 텔레포트가 취소되었습니다. ",NamedTextColor.RED))
 
+                AdvcTpaKommand.tpaMap.remove(sender.uniqueId)
                 players["${sender.uniqueId}/${receiver?.uniqueId}"]?.cancel()
                 players.remove("${sender.uniqueId}/${receiver?.uniqueId}")
                 AdvcTpaKommand.tpaMap.remove(p.uniqueId)
@@ -43,6 +44,7 @@ class AdvcTpaListener: Listener {
                 sender?.sendMessage(text("상대방의 움직임이 감지되어 텔레포트가 취소되었습니다. ",NamedTextColor.RED))
                 receiver.sendMessage(text("움직임이 감지되어 텔레포트가 취소되었습니다. ",NamedTextColor.RED))
 
+                AdvcTpaKommand.tpaMap.remove(sender?.uniqueId)
                 players["${sender?.uniqueId}/${receiver.uniqueId}"]?.cancel()
                 players.remove("${sender?.uniqueId}/${receiver.uniqueId}")
                 AdvcTpaKommand.tpaMap.remove(p.uniqueId)
