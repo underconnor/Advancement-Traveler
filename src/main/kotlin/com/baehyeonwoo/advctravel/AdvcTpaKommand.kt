@@ -315,7 +315,7 @@ object AdvcTpaKommand {
                         val receiverId = tpaMap[sender.uniqueId]!!
                         val receiver = Bukkit.getPlayer(receiverId)!!
 
-                        receiver.sendMessage(text("${sender.name}님이 텔레포트 요청을 취소하였습니다.",NamedTextColor.GOLD))
+                        receiver.sendMessage(text("${sender.name}님이 텔레포트 요청을 취소하였습니다.",NamedTextColor.RED))
 
                         tpaMap.remove(sender.uniqueId)
 
@@ -324,7 +324,7 @@ object AdvcTpaKommand {
                             players.remove("${sender.uniqueId}/${receiver.uniqueId}")
                         }
 
-                        sender.sendMessage(text("${receiver.name}님에게 보낸 텔레포트 요청을 취소하였습니다.", NamedTextColor.GOLD))
+                        sender.sendMessage(text("${receiver.name}님에게 보낸 텔레포트 요청을 취소하였습니다.", NamedTextColor.RED))
                     }
                 }
             }
