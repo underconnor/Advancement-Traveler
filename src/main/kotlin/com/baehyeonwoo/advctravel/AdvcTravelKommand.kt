@@ -18,6 +18,8 @@ package com.baehyeonwoo.advctravel
 
 import io.github.monun.kommand.kommand
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.event.HandlerList
 import org.bukkit.plugin.Plugin
 
 
@@ -29,8 +31,12 @@ object AdvcTravelKommand {
     private fun getInstance(): Plugin {
         return AdvcTravelMain.instance
     }
+
+    private val server = getInstance().server
     
     private val config = getInstance().config
+
+    private val enabled = config.getBoolean("enabled")
 
     fun advcTravelKommand() {
         getInstance().kommand {
@@ -43,6 +49,45 @@ object AdvcTravelKommand {
                 then("runner") {
                     executes {
                         sender.sendMessage(text("Current Runner UUID settings: ${requireNotNull(config.getString("runner").toString())}"))
+                    }
+                }
+                then("switch") {
+                    executes {
+                        sender.sendMessage("Usage: /advc switch <status/on/off>")
+                    }
+                    then("on") {
+                        executes {
+                            if (enabled) {
+                                config.set("enabled", true)
+                                getInstance().saveConfig()
+                                server.pluginManager.registerEvents(AdvcTravelEvent(), getInstance())
+                                server.pluginManager.registerEvents(AdvcTpaListener(), getInstance())
+                                AdvcTpaKommand.advcTpaKommand()
+                                sender.sendMessage(text("ADVC is Now Enabled!", NamedTextColor.GREEN))
+                            }
+                            else {
+                                sender.sendMessage(text("ADVC is Already Enabled.", NamedTextColor.RED))
+                            }
+                        }
+                    }
+                    then("off") {
+                        executes {
+                            if (enabled) {
+                                config.set("enabled", false)
+                                getInstance().saveConfig()
+                                HandlerList.unregisterAll(AdvcTravelEvent())
+                                // Not Unregistered AdvcTpaListener because of the Kommand.
+                                sender.sendMessage(text("ADVC is Now Disabled!", NamedTextColor.GREEN))
+                            }
+                            else {
+                                sender.sendMessage(text("ADVC is Already Disabled.", NamedTextColor.RED))
+                            }
+                        }
+                    }
+                    then("status") {
+                        executes {
+                            sender.sendMessage(text("Status: $enabled"))
+                        }
                     }
                 }
             }

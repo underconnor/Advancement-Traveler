@@ -39,17 +39,23 @@ class AdvcTravelMain : JavaPlugin() {
     override fun onEnable() {
         instance = this
 
+        // Config and logger settings output
         AdvcTravelConfig.load(configFile)
         logger.info("Config Administrator Settings: ${config.getString("administrator")}")
         logger.info("Config Runner Settings: ${config.getString("runner")}")
+
+        // Player count bug on reload (Fixed with below code)
         server.maxPlayers = config.getInt("maxplayers") + server.onlinePlayers.asSequence().filter {
             config.getString("administrator").toString().contains(it.uniqueId.toString())
         }.toMutableList().size
+
+        // Registering
         server.pluginManager.registerEvents(AdvcTravelEvent(), this)
         server.pluginManager.registerEvents(AdvcTpaListener(), this)
         AdvcTravelKommand.advcTravelKommand()
         AdvcTpaKommand.advcTpaKommand()
 
+        // ScoreboardManager
         val sm = Bukkit.getScoreboardManager()
         val sc = sm.mainScoreboard
 
@@ -69,6 +75,7 @@ class AdvcTravelMain : JavaPlugin() {
     }
 
     override fun onDisable() {
+        // Player count bug on close (Fixed with below code)
         val adminCount = server.onlinePlayers.asSequence().filter {
             config.getString("administrator").toString().contains(it.uniqueId.toString())
         }.toMutableList().size
