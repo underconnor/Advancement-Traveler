@@ -155,13 +155,13 @@ object AdvcTpaKommand {
                         receiver.sendMessage(text("${3 - TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay)}분 이후에 다시 시도하세요.", NamedTextColor.RED))
                     }
                     else if(tpaMap.isEmpty()){
-                        receiver.sendMessage(text("얘! 없는 요청을 취소할 순 없단다 맨이야!",NamedTextColor.RED))
+                        receiver.sendMessage(text("얘! 없는 요청을 수락할 순 없단다 맨이야!",NamedTextColor.RED))
                     }
                     else if (tpaMap.values.count { x -> x == receiver.uniqueId } > 1) {
                         receiver.sendMessage(text("여러개의 텔레포트 요청이 있습니다. /tpaaccept <player>로 요청을 수락하세요."))
                     } else {
                         val request = tpaMap.entries.filter { x -> x.value == receiver.uniqueId }
-                        if (request.isEmpty()) receiver.sendMessage(text("얘! 없는 요청을 취소할 순 없단다 맨이야!", NamedTextColor.RED))
+                        if (request.isEmpty()) receiver.sendMessage(text("얘! 없는 요청을 수락할 순 없단다 맨이야!", NamedTextColor.RED))
 
                         else {
                             val target = Bukkit.getPlayer(request[0].key)
@@ -189,7 +189,7 @@ object AdvcTpaKommand {
                             receiver.sendMessage(text("${3 - TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - receiver.uniqueId.receiveTpaDelay)}분 이후에 다시 시도하세요.", NamedTextColor.RED))
                         }
                         else if(tpaMap.isEmpty()){
-                            receiver.sendMessage(text("얘! 없는 요청을 취소할 순 없단다 맨이야!",NamedTextColor.RED))
+                            receiver.sendMessage(text("얘! 없는 요청을 수락할 순 없단다 맨이야!",NamedTextColor.RED))
                         }
                         else {
                             val select: Player by it

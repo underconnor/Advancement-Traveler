@@ -130,9 +130,7 @@ class AdvcTravelEvent : Listener {
         val c = e.message
 
         if(c.startsWith("/tpa") || c.startsWith("/teammsg") || c.startsWith("/tm")) e.isCancelled = false
-        else if (p.uniqueId.toString() !in administrator) {
-            e.isCancelled = true
-        }
+        else e.isCancelled = p.uniqueId.toString() !in administrator
     }
 
     @EventHandler
