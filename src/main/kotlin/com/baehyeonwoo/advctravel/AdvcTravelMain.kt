@@ -56,22 +56,29 @@ class AdvcTravelMain : JavaPlugin() {
         AdvcTpaKommand.advcTpaKommand()
 
         // ScoreboardManager
-        val sm = Bukkit.getScoreboardManager()
+        val sm = server.scoreboardManager
         val sc = sm.mainScoreboard
 
         val hunter = sc.getTeam("Hunter")
-        if(hunter == null) sc.registerNewTeam("Hunter")
+        if (hunter == null) sc.registerNewTeam("Hunter")
 
-        hunter?.setAllowFriendlyFire(false)
-        hunter?.setCanSeeFriendlyInvisibles(false)
         hunter?.color(NamedTextColor.RED)
 
         val runner = sc.getTeam("Runner")
-        if(runner == null) sc.registerNewTeam("Runner")
+        if (runner == null) sc.registerNewTeam("Runner")
 
-        runner?.setAllowFriendlyFire(false)
-        runner?.setCanSeeFriendlyInvisibles(false)
         runner?.color(NamedTextColor.AQUA)
+
+        val admin = sc.getTeam("Admin")
+        if (admin == null) sc.registerNewTeam("Admin")
+
+        admin?.color(NamedTextColor.DARK_RED)
+
+        // Team Settings
+        for (teams in sc.teams) {
+            teams.setCanSeeFriendlyInvisibles(false)
+            teams.setAllowFriendlyFire(false)
+        }
     }
 
     override fun onDisable() {

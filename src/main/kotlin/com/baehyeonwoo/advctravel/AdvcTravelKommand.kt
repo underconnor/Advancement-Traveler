@@ -16,6 +16,8 @@
 
 package com.baehyeonwoo.advctravel
 
+import io.github.monun.kommand.StringType
+import io.github.monun.kommand.getValue
 import io.github.monun.kommand.kommand
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -87,6 +89,24 @@ object AdvcTravelKommand {
                     then("status") {
                         executes {
                             sender.sendMessage(text("Status: $enabled"))
+                        }
+                    }
+                }
+                then("announce") {
+                    then("title") {
+                        then("title" to string(StringType.GREEDY_PHRASE)) {
+                            then("subtitle") {
+                                then("subtitle" to string(StringType.GREEDY_PHRASE)) {
+                                    executes {
+                                        val title: String by it
+                                        val subtitle: String by it
+
+                                        server.onlinePlayers.forEach { p ->
+                                            p.sendTitle(title, subtitle, 0, 150, 0)
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }

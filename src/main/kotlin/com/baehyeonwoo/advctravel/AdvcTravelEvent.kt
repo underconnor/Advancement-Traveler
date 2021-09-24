@@ -28,12 +28,10 @@ import org.bukkit.Tag
 import org.bukkit.World
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import org.bukkit.entity.Projectile
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockPlaceEvent
-import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.player.*
 import org.bukkit.event.player.PlayerLoginEvent.Result
 import org.bukkit.plugin.Plugin
@@ -59,11 +57,22 @@ class AdvcTravelEvent : Listener {
 
     private val runner = requireNotNull(config.getString("runner").toString())
 
+    private val adminTeam = server.scoreboardManager.mainScoreboard.getTeam("Admin")
+
     private fun randomTeleport(player: Player) {
         val randomX = Random.nextDouble(-1000.0, 1000.0)
         val randomZ = Random.nextDouble(-1000.0, 1000.0)
 
         player.teleport(player.location.set(randomX, player.world.getHighestBlockYAt(randomX.toInt(), randomZ.toInt()).toDouble(), randomZ))
+    }
+
+    private fun teamMsgTask(player: Player, messageContent: String) {
+        server.scheduler.runTask(
+            getInstance(),
+            Runnable {
+                server.dispatchCommand(player as CommandSender, "teammsg $messageContent")
+            }
+        )
     }
 
     @EventHandler
@@ -108,19 +117,18 @@ class AdvcTravelEvent : Listener {
         val msgComponent = e.message()
         val msg = (msgComponent as TextComponent).content()
 
-        if (p.uniqueId.toString() in administrator) {
+        if (p.uniqueId.toString() in administrator || (adminTeam != null) && adminTeam.hasEntry(p.name)) {
+            teamMsgTask(p, msg)
             e.isCancelled = false
+
+            server.consoleSender.sendMessage(text("<${p.name}> $msg"))
         }
         else {
-            server.scheduler.runTask(
-                getInstance(),
-                Runnable {
-                    server.dispatchCommand(p as CommandSender, "teammsg $msg")
-                }
-            )
+            teamMsgTask(p, msg)
 
             e.isCancelled = true
-            Bukkit.getConsoleSender().sendMessage(text("${p.name} issued server command: /teammsg $msg"))
+            server.consoleSender.sendMessage(text("${p.name} issued server command: /teammsg $msg"))
+            server.consoleSender.sendMessage(text("[${p.teamDisplayName()}] <${p.name}> $msg"))
         }
     }
 
