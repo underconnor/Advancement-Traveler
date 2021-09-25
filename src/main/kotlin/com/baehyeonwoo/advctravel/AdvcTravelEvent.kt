@@ -128,7 +128,6 @@ class AdvcTravelEvent : Listener {
 
             e.isCancelled = true
             server.consoleSender.sendMessage(text("${p.name} issued server command: /teammsg $msg"))
-            server.consoleSender.sendMessage(text("[${p.teamDisplayName()}] <${p.name}> $msg"))
         }
     }
 

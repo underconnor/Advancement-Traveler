@@ -39,25 +39,25 @@ class AdvcTpaListener: Listener {
         val to = e.to
         val from = e.from
 
-        if (tpaMap.values.any { x -> x.sender == p } ) {
+        if (tpaMap.values.any { x -> x.sender == p && x.accepted} ) {
             if (from.x != to.x || from.y != to.y || from.z != to.z) {
                 val sender = p // 안햇갈릴려고 한거임 건들지마셈
                 val receiver = tpaMap.values.first { x -> x.sender == p }.receiver
 
-                sender.sendMessage(text("움직임이 감지되어 텔레포트가 취소되었습니다. ", NamedTextColor.RED))
-                receiver.sendMessage(text("상대방의 움직임이 감지되어 텔레포트가 취소되었습니다. ", NamedTextColor.RED))
+                sender.sendMessage(text("움직임이 감지되어 ${receiver.name}님으로의 텔레포트 요청이 취소되었습니다. ", NamedTextColor.RED))
+                receiver.sendMessage(text("상대방의 움직임이 감지되어 ${sender.name}님의 텔레포트 요청이 취소되었습니다. ", NamedTextColor.RED))
 
                 tpaMap[sender]?.waitTask?.cancel()
                 tpaMap.remove(sender)
             }
         }
-        else if (tpaMap.values.any { x -> x.receiver == p }) {
+        else if (tpaMap.values.any { x -> x.receiver == p && x.accepted}) {
             if (from.x != to.x || from.y != to.y || from.z != to.z) {
                 val receiver = p
                 val sender = tpaMap.values.first { x -> x.receiver == p }.sender
 
-                sender.sendMessage(text("움직임이 감지되어 텔레포트가 취소되었습니다. ", NamedTextColor.RED))
-                receiver.sendMessage(text("상대방의 움직임이 감지되어 텔레포트가 취소되었습니다. ", NamedTextColor.RED))
+                sender.sendMessage(text("상대방의 움직임이 감지되어 ${receiver.name}님으로의 텔레포트가 취소되었습니다. ", NamedTextColor.RED))
+                receiver.sendMessage(text("움직임이 감지되어 ${sender.name}님의 텔레포트 요청이 취소되었습니다. ", NamedTextColor.RED))
 
                 tpaMap[sender]?.waitTask?.cancel()
                 tpaMap.remove(sender)
