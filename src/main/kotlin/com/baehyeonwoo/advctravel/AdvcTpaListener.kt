@@ -25,8 +25,13 @@ import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.plugin.Plugin
 import java.util.*
 
+/***
+ * @author PyBsh
+ */
+
 class AdvcTpaListener: Listener {
-    private val players = AdvcTpaKommand.players
+
+    val tpaMap = AdvcTpaKommand.tpaMap
 
     @EventHandler
     fun onPlayerMove(e: PlayerMoveEvent) {
@@ -34,36 +39,30 @@ class AdvcTpaListener: Listener {
         val to = e.to
         val from = e.from
 
-        if(players.keys.any { x -> p.uniqueId.toString() == x.split('/')[0]} ) {
-            if (from.x != to.x && from.y != to.y && from.z != to.z) {
-                val receiver = Bukkit.getPlayer(UUID.fromString(players.keys.first { x ->
-                    p.uniqueId.toString() == x.split(
-                        '/'
-                    )[0]
-                }.split('/')[1]))
+        if (tpaMap.values.any { x -> x.sender == p } ) {
+            if (from.x != to.x || from.y != to.y || from.z != to.z) {
+                val sender = p // 안햇갈릴려고 한거임 건들지마셈
+                val receiver = tpaMap.values.first { x -> x.sender == p }.receiver
 
-                p.sendMessage(text("움직임이 감지되어 텔레포트가 취소되었습니다. ", NamedTextColor.RED))
-                receiver?.sendMessage(text("상대방의 움직임이 감지되어 텔레포트가 취소되었습니다. ", NamedTextColor.RED))
+                sender.sendMessage(text("움직임이 감지되어 텔레포트가 취소되었습니다. ", NamedTextColor.RED))
+                receiver.sendMessage(text("상대방의 움직임이 감지되어 텔레포트가 취소되었습니다. ", NamedTextColor.RED))
 
-                AdvcTpaKommand.tpaMap.remove(p.uniqueId)
-                players["${p.uniqueId}/${receiver?.uniqueId}"]?.cancel()
-                players.remove("${p.uniqueId}/${receiver?.uniqueId}")
-                AdvcTpaKommand.tpaMap.remove(p.uniqueId)
+                tpaMap[sender]?.waitTask?.cancel()
+                tpaMap.remove(sender)
             }
         }
-        else if(players.keys.any { x -> p.uniqueId.toString() == x.split('/')[1]}) {
-            if (from.x != to.x && from.y != to.y && from.z != to.z) {
-                val sender = Bukkit.getPlayer(UUID.fromString(players.keys.first { x ->
-                    p.uniqueId.toString() == x.split('/')[1] }.split('/')[0]))
+        else if (tpaMap.values.any { x -> x.receiver == p }) {
+            if (from.x != to.x || from.y != to.y || from.z != to.z) {
+                val receiver = p
+                val sender = tpaMap.values.first { x -> x.receiver == p }.sender
 
-                sender?.sendMessage(text("상대방의 움직임이 감지되어 텔레포트가 취소되었습니다. ", NamedTextColor.RED))
-                p.sendMessage(text("움직임이 감지되어 텔레포트가 취소되었습니다. ", NamedTextColor.RED))
+                sender.sendMessage(text("움직임이 감지되어 텔레포트가 취소되었습니다. ", NamedTextColor.RED))
+                receiver.sendMessage(text("상대방의 움직임이 감지되어 텔레포트가 취소되었습니다. ", NamedTextColor.RED))
 
-                AdvcTpaKommand.tpaMap.remove(sender?.uniqueId)
-                players["${sender?.uniqueId}/${p.uniqueId}"]?.cancel()
-                players.remove("${sender?.uniqueId}/${p.uniqueId}")
-                AdvcTpaKommand.tpaMap.remove(p.uniqueId)
+                tpaMap[sender]?.waitTask?.cancel()
+                tpaMap.remove(sender)
             }
         }
     }
+
 }
