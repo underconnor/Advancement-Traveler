@@ -59,6 +59,28 @@ object AdvcTpaKommand {
         }
     private val receiveTimestamps = HashMap<UUID, Long>()
 
+    fun countdown(sender: Player) {
+        val receiver = tpaMap.values.first { x -> x.sender == sender}.receiver
+        val startTime = System.currentTimeMillis()
+        val coutTimer = Timer()
+        coutTimer.schedule(object : TimerTask(){
+            override fun run() {
+                if (29 - TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()-startTime) < 1) {
+                    sender.sendActionBar(text("상대가 텔레포트중입니다...", NamedTextColor.GOLD))
+                    receiver.sendActionBar(text("텔레포트중입니다...", NamedTextColor.GOLD))
+                    coutTimer.cancel()
+                } else if (tpaMap[sender]?.accepted == null || tpaMap[sender]?.accepted == false) {
+                    sender.sendActionBar(text("텔레포트가 취소되었습니다", NamedTextColor.RED))
+                    receiver.sendActionBar(text("텔레포트가 취소되었습니다", NamedTextColor.RED))
+                    coutTimer.cancel()
+                } else {
+                    sender.sendActionBar(text("${29 - TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()-startTime)}초 동안 기다리세요", NamedTextColor.GOLD))
+                    receiver.sendActionBar(text("${29 - TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()-startTime)}초 동안 기다리세요", NamedTextColor.GOLD))
+                }
+            }
+        },0,1000)
+    }
+
     fun advcTpaKommand() {
         getInstance().kommand {
             register("tpa") {
@@ -153,6 +175,7 @@ object AdvcTpaKommand {
 
                             sender.sendMessage(text("요청이 수락되었습니다. 30초간 움직이지 마세요", NamedTextColor.GOLD))
                             receiver.sendMessage(text("요청을 수락하셨습니다. 30초간 움직이지 마세요", NamedTextColor.GOLD))
+                            countdown(sender)
                         }
                     }
 
@@ -187,6 +210,7 @@ object AdvcTpaKommand {
 
                             sender.sendMessage(text("요청이 수락되었습니다. 30초간 움직이지 마세요", NamedTextColor.GOLD))
                             receiver.sendMessage(text("요청을 수락하셨습니다. 30초간 움직이지 마세요", NamedTextColor.GOLD))
+                            countdown(sender)
                         }
                     }
                 }
@@ -202,6 +226,7 @@ object AdvcTpaKommand {
                     else {
                         val sender = tpaMap.values.first { x -> x.receiver == receiver}.sender
                         tpaMap.values.first { x -> x.receiver == receiver }.expirTask.cancel()
+                        tpaMap[sender]?.waitTask?.cancel()
 
                         tpaMap.remove(sender)
                         sender.sendMessage(text("${receiver.name}님에게 보낸 요청이 거절되었습니다.", NamedTextColor.GOLD))
@@ -217,6 +242,7 @@ object AdvcTpaKommand {
                         if (!tpaMap.values.any { x -> x.receiver == receiver && x.sender == sender }) receiver.sendMessage(text("얘! ${sender.name}한테서 받은 요청이 없잖아!!", NamedTextColor.RED))
                         else{
                             tpaMap[sender]?.expirTask?.cancel()
+                            tpaMap[sender]?.waitTask?.cancel()
                             tpaMap.remove(sender)
                             sender.sendMessage(text("${receiver.name}님에게 보낸 요청이 거절되었습니다.", NamedTextColor.GOLD))
                             receiver.sendMessage(text("${sender.name}님의 요청을 거절하였습니다.", NamedTextColor.GOLD))
