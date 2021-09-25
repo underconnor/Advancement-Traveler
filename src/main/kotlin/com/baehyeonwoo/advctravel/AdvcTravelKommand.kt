@@ -35,9 +35,7 @@ object AdvcTravelKommand {
     }
 
     private val server = getInstance().server
-    
     private val config = getInstance().config
-
     private val enabled = config.getBoolean("enabled")
 
     fun advcTravelKommand() {
@@ -59,7 +57,7 @@ object AdvcTravelKommand {
                     }
                     then("on") {
                         executes {
-                            if (enabled) {
+                            if (!enabled) {
                                 config.set("enabled", true)
                                 getInstance().saveConfig()
                                 server.pluginManager.registerEvents(AdvcTravelEvent(), getInstance())
