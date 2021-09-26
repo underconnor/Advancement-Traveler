@@ -220,10 +220,9 @@ object AdvcTpaKommand {
                     else if (tpaMap.values.count { x -> x.receiver == receiver } > 1) receiver.sendMessage(text("얘! 받은 요청이 너무 많아! /tpadeny <Player>로 다시 거절하렴", NamedTextColor.RED))
                     else {
                         val sender = tpaMap.values.first { x -> x.receiver == receiver}.sender
-<<<<<<< HEAD
-                        tpaMap[sender]?.expirTask?.cancel()
-=======
 
+                        tpaMap[sender]?.expirTask?.cancel()
+                        tpaMap[sender]?.waitTask?.cancel()
 
                         tpaMap.remove(sender)
                         sender.sendMessage(text("${receiver.name}님에게 보낸 요청이 거절되었습니다.", NamedTextColor.GOLD))
