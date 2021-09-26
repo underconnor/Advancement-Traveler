@@ -127,12 +127,7 @@ object AdvcTpaKommand {
                         val sender = tpaMap.values.first { x -> x.receiver == receiver}.sender
                         val accepted = tpaMap.values.first { x -> x.receiver == receiver}.accepted
 
-                        if (!sender.isOnline){
-                            receiver.sendMessage(text("얘! 보낸 애가 도망갔어!",NamedTextColor.RED))
-                            tpaMap.values.first { x -> x.receiver == receiver}.expirTask.cancel()
-                            tpaMap.remove(sender)
-                        }
-                        else if (accepted) receiver.sendMessage(text("얘! 이미 요청을 받았잖아!! 또 받게?", NamedTextColor.RED))
+                        if (accepted) receiver.sendMessage(text("얘! 이미 요청을 받았잖아!! 또 받게?", NamedTextColor.RED))
                         else{
                             tpaMap.values.first { x -> x.receiver == receiver }.accepted = true
                             tpaMap.values.first { x -> x.receiver == receiver }.expirTask.cancel()
@@ -168,8 +163,8 @@ object AdvcTpaKommand {
                         else if (tpaMap.values.first { x -> x.receiver == receiver && x.sender == sender }.accepted) receiver.sendMessage(text("얘! 이미 요청을 받았잖아!! 또 받게?", NamedTextColor.RED))
                         else if (tpaMap.values.any {x -> x.receiver == receiver && x.accepted }) receiver.sendMessage(text("얘! 이미 요청을 받고있잖니! 하나만 하렴!",NamedTextColor.RED))
                         else {
-                            tpaMap.values.first { x -> x.receiver == receiver && x.sender == sender }.accepted = true
-                            tpaMap.values.first { x -> x.receiver == receiver && x.sender == sender }.expirTask.cancel()
+                            tpaMap[sender]?.accepted = true
+                            tpaMap[sender]?.expirTask?.cancel()
 
                             val task = scheduler.runTaskLater(
                                 getInstance(),
@@ -201,7 +196,7 @@ object AdvcTpaKommand {
                     else if (tpaMap.values.count { x -> x.receiver == receiver } > 1) receiver.sendMessage(text("얘! 받은 요청이 너무 많아! /tpadeny <Player>로 다시 거절하렴", NamedTextColor.RED))
                     else {
                         val sender = tpaMap.values.first { x -> x.receiver == receiver}.sender
-                        tpaMap.values.first { x -> x.receiver == receiver }.expirTask.cancel()
+                        tpaMap[sender]?.expirTask?.cancel()
 
                         tpaMap.remove(sender)
                         sender.sendMessage(text("${receiver.name}님에게 보낸 요청이 거절되었습니다.", NamedTextColor.GOLD))
@@ -244,16 +239,6 @@ object AdvcTpaKommand {
                 }
             }
 
-            register("tpadebug"){
-                requires { playerOrNull != null }
-                executes {
-                    player.sendMessage(text(
-                        "sender = ${tpaMap[player]?.sender?.name}\n" +
-                                "receiver = ${tpaMap[player]?.receiver?.name}\n" +
-                                "accepted = ${tpaMap[player]?.accepted}\n"
-                    ))
-                }
-            }
         }
     }
 }

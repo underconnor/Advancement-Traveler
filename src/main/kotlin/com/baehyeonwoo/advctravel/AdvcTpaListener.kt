@@ -22,6 +22,7 @@ import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerMoveEvent
+import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.Plugin
 import java.util.*
 
@@ -53,7 +54,7 @@ class AdvcTpaListener: Listener {
         }
         else if (tpaMap.values.any { x -> x.receiver == p && x.accepted}) {
             if (from.x != to.x || from.y != to.y || from.z != to.z) {
-                val receiver = p
+                val receiver = p // 안햇갈릴려고 한거임 건들지마셈
                 val sender = tpaMap.values.first { x -> x.receiver == p }.sender
 
                 sender.sendMessage(text("상대방의 움직임이 감지되어 ${receiver.name}님으로의 텔레포트가 취소되었습니다. ", NamedTextColor.RED))
@@ -65,4 +66,16 @@ class AdvcTpaListener: Listener {
         }
     }
 
+    @EventHandler
+    fun OnPlayerQuit(e: PlayerQuitEvent){
+        val sender = e.player
+
+        if(tpaMap.keys.any { x -> x == sender}){
+            tpaMap[sender]?.expirTask?.cancel()
+            tpaMap[sender]?.waitTask?.cancel()
+
+            tpaMap[sender]?.receiver?.sendMessage(text("얘! 텔레포트 요청을 보낸 ${sender.name} 가 도망갔어! (요청 취소)", NamedTextColor.RED))
+            tpaMap.remove(sender)
+        }
+    }
 }
