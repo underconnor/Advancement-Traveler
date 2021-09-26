@@ -57,7 +57,7 @@ class AdvcTpaListener: Listener {
                 val receiver = p // 안햇갈릴려고 한거임 건들지마셈
                 val sender = tpaMap.values.first { x -> x.receiver == p }.sender
 
-                sender.sendMessage(text("상대방의 움직임이 감지되어 ${receiver.name}님으로의 텔레포트가 취소되었습니다. ", NamedTextColor.RED))
+                sender.sendMessage(text("상대방의 움직임이 감지되어 ${receiver.name}님으로의 텔레포트 요청이 취소되었습니다. ", NamedTextColor.RED))
                 receiver.sendMessage(text("움직임이 감지되어 ${sender.name}님의 텔레포트 요청이 취소되었습니다. ", NamedTextColor.RED))
 
                 tpaMap[sender]?.waitTask?.cancel()
