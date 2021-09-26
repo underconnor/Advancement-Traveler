@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-package com.baehyeonwoo.advctravel
+package com.baehyeonwoo.advctravel.plugin
 
+import com.baehyeonwoo.advctravel.plugin.commands.AdvcTpaKommand
+import com.baehyeonwoo.advctravel.plugin.commands.AdvcTravelKommand
+import com.baehyeonwoo.advctravel.plugin.config.AdvcTravelConfig
+import com.baehyeonwoo.advctravel.plugin.events.AdvcTpaEvent
+import com.baehyeonwoo.advctravel.plugin.events.AdvcTravelEvent
 import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
 
@@ -51,7 +55,7 @@ class AdvcTravelMain : JavaPlugin() {
 
         // Registering
         server.pluginManager.registerEvents(AdvcTravelEvent(), this)
-        server.pluginManager.registerEvents(AdvcTpaListener(), this)
+        server.pluginManager.registerEvents(AdvcTpaEvent(), this)
         AdvcTravelKommand.advcTravelKommand()
         AdvcTpaKommand.advcTpaKommand()
 

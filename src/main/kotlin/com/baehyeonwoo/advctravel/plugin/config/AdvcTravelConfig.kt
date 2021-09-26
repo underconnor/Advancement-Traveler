@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.baehyeonwoo.advctravel
+package com.baehyeonwoo.advctravel.plugin.config
 
 import io.github.monun.tap.config.Config
 import io.github.monun.tap.config.ConfigSupport

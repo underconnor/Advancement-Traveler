@@ -14,25 +14,23 @@
  * limitations under the License.
  */
 
-package com.baehyeonwoo.advctravel
+package com.baehyeonwoo.advctravel.plugin.events
 
+import com.baehyeonwoo.advctravel.plugin.commands.AdvcTpaKommand
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import org.bukkit.plugin.Plugin
-import java.util.*
 
 /***
  * @author PyBsh
  */
 
-class AdvcTpaListener: Listener {
+class AdvcTpaEvent: Listener {
 
-    val tpaMap = AdvcTpaKommand.tpaMap
+    private val tpaMap = AdvcTpaKommand.tpaMap
 
     @EventHandler
     fun onPlayerMove(e: PlayerMoveEvent) {
@@ -40,7 +38,7 @@ class AdvcTpaListener: Listener {
         val to = e.to
         val from = e.from
 
-        if (tpaMap.values.any { x -> x.sender == p && x.accepted} ) {
+        if (tpaMap.values.any { x -> x.sender == p && x.isAccepted} ) {
             if (from.x != to.x || from.y != to.y || from.z != to.z) {
                 val sender = p // 안햇갈릴려고 한거임 건들지마셈
                 val receiver = tpaMap.values.first { x -> x.sender == p }.receiver
@@ -52,7 +50,7 @@ class AdvcTpaListener: Listener {
                 tpaMap.remove(sender)
             }
         }
-        else if (tpaMap.values.any { x -> x.receiver == p && x.accepted}) {
+        else if (tpaMap.values.any { x -> x.receiver == p && x.isAccepted}) {
             if (from.x != to.x || from.y != to.y || from.z != to.z) {
                 val receiver = p // 안햇갈릴려고 한거임 건들지마셈
                 val sender = tpaMap.values.first { x -> x.receiver == p }.sender
@@ -67,15 +65,28 @@ class AdvcTpaListener: Listener {
     }
 
     @EventHandler
-    fun OnPlayerQuit(e: PlayerQuitEvent){
-        val sender = e.player
+    fun onPlayerQuit(e: PlayerQuitEvent){
+        val p = e.player
 
-        if(tpaMap.keys.any { x -> x == sender}){
-            tpaMap[sender]?.expirTask?.cancel()
+        if(tpaMap.keys.any { x -> x == p}){
+            val sender = p
+            tpaMap[sender]?.expiredTask?.cancel()
             tpaMap[sender]?.waitTask?.cancel()
 
             tpaMap[sender]?.receiver?.sendMessage(text("얘! 텔레포트 요청을 보낸 ${sender.name} 가 도망갔어! (요청 취소)", NamedTextColor.RED))
             tpaMap.remove(sender)
+        }
+        else if(tpaMap.values.any { x -> x.receiver == p} ){
+            val receiver = p
+            val senders = tpaMap.values.filter { x -> x.receiver == receiver}
+
+            senders.forEach{ x ->
+                tpaMap[x.sender]?.expiredTask?.cancel()
+                tpaMap[x.sender]?.waitTask?.cancel()
+
+                tpaMap[x.sender]?.sender?.sendMessage(text("얘! 텔레포트 요청을 받은 ${receiver.name} 가 도망갔어! (요청 취소)", NamedTextColor.RED))
+                tpaMap.remove(x.sender)
+            }
         }
     }
 }

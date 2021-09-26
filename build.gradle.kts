@@ -29,11 +29,11 @@ tasks {
         filteringCharset = "UTF-8"
     }
     register<Jar>("paperJar") {
+        from(sourceSets["main"].output)
+
         archiveBaseName.set(archive)
         archiveClassifier.set("")
         archiveVersion.set("")
-
-        from(sourceSets["main"].output)
 
         doLast {
             copy {

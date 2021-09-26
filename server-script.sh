@@ -9,13 +9,28 @@ download() {
   wget -c --content-disposition -P "$2" -N "$1" 2>&1 | tail -1
 }
 
-server=https://github.com/aroxu/server-script/releases/latest/download/server_linux_x64.zip
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+  server=https://github.com/aroxu/server-script/releases/latest/download/server_linux_x64.zip
+elif [[ "$OSTYPE" == "msys" ]]; then
+  server=https://github.com/aroxu/server-script/releases/latest/download/server_windows_x64.exe.zip
+else
+  echo "Unsupported OS. Please check your OSTYPE and try again."
+  exit
+fi
+
+if type -p wget
+then
+    echo "Found wget Package"
+else
+    echo "wget was not found on this machine. Please install with your Package Manager. Exiting..."
+    exit
+fi
 
 if type -p bsdtar
 then
-    echo "Found Bsdtar Package"
+    echo "Found LibArchive-Tools Package"
 else
-    echo "Bsdtar was not found on this machine. Please install with your Package Manager. Exiting..."
+    echo "LibArchive-Tools was not found on this machine. Please install with your Package Manager. Exiting..."
     exit
 fi
 
@@ -39,6 +54,12 @@ then
   rm -rf ./server_linux_x64.zip
   chmod +x ./server
   ./server
+elif [ -f "server_windows_x64.exe.zip" ]
+then
+  bsdtar -xf server_windows_x64.exe.zip -C "./"
+  rm -rf ./server_windows_x64.exe.zip
+  chmod +x ./server.exe
+  ./server.exe
 else
   echo "Something went wrong! Try manually download server from: https://github.com/arxou/server-script/releases."
   echo "Exiting..."

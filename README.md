@@ -20,9 +20,9 @@ Large-scale Viewer-participating Content Plugin for [komq](https://youtube.com/ì
 
 ---
 
-### Info Markdown
+### Info
 
-**[[Info.md](./Info.md)]**
+- (Will be changed into Video.)
 
 ---
 

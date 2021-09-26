@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package com.baehyeonwoo.advctravel
+package com.baehyeonwoo.advctravel.plugin.events
 
+import com.baehyeonwoo.advctravel.plugin.AdvcTravelMain
 import com.destroystokyo.paper.event.server.PaperServerListPingEvent
 import io.papermc.paper.event.player.AsyncChatEvent
 import net.kyori.adventure.text.Component.text
@@ -82,12 +83,17 @@ class AdvcTravelEvent : Listener {
 
         val sm = Bukkit.getScoreboardManager()
         val sc = sm.mainScoreboard
-        if(runner.contains(p.uniqueId.toString())){
+
+        if (p.uniqueId.toString() in runner){
             val runner = sc.getTeam("Runner")
             runner?.addEntry(p.name)
-        } else{
+        } else if (p.uniqueId.toString() !in runner && p.uniqueId.toString() !in administrator) {
             val hunter = sc.getTeam("Hunter")
             hunter?.addEntry(p.name)
+        }
+        else if (p.uniqueId.toString() in administrator) {
+            val admin = sc.getTeam("Admin")
+            admin?.addEntry(p.name)
         }
 
         if (!p.hasPlayedBefore()) {
@@ -119,7 +125,7 @@ class AdvcTravelEvent : Listener {
 
         if (p.uniqueId.toString() in administrator || (adminTeam != null) && adminTeam.hasEntry(p.name)) {
             teamMsgTask(p, msg)
-            e.isCancelled = false
+            e.isCancelled = true
 
             server.consoleSender.sendMessage(text("<${p.name}> $msg"))
         }
@@ -168,16 +174,16 @@ class AdvcTravelEvent : Listener {
                 is Player -> {
                     player = damager
                 }
-//                is Tameable -> {
-//                    if (damager is Wolf) {
-//                        if (!runner.contains(damager.target?.uniqueId.toString())) {
-//                            damager.isAngry = false
-//                        }
-//
-//                    }
-//
-//                    player = damager.owner as Player
-//                }
+                is Tameable -> {
+                    if (damager is Wolf) {
+                        if (!runner.contains(damager.target?.uniqueId.toString())) {
+                            damager.isAngry = false
+                        }
+
+                    }
+
+                    player = damager.owner as Player
+                }
                 is Projectile -> {
                     if (damager.shooter is Player) {
                         player = damager.shooter as Player
@@ -194,25 +200,43 @@ class AdvcTravelEvent : Listener {
     @EventHandler
     fun onPlayerLogin(e: PlayerLoginEvent) {
         val p = e.player
-        if(p.uniqueId.toString() in administrator || p.uniqueId.toString() in runner) {
+        if (p.uniqueId.toString() in administrator) {
             if(!p.isBanned) {
                 if(e.result == Result.KICK_FULL) {
                     e.allow()
+                    ++server.maxPlayers
                 }
-                ++server.maxPlayers
+            }
+        }
+        else if (p.uniqueId.toString() in runner) {
+            if(!p.isBanned) {
+                if (e.result == Result.KICK_FULL) {
+                    e.allow()
+                    ++server.maxPlayers
+                }
             }
         }
         config.set("maxplayers", server.maxPlayers)
         getInstance().saveConfig()
     }
 
-
     @EventHandler
     fun onPlayerQuit(e: PlayerQuitEvent) {
         val p = e.player
 
-        if(p.uniqueId.toString() in administrator || p.uniqueId.toString() in runner) {
-            --server.maxPlayers
+        if (p.uniqueId.toString() in administrator) {
+            val currentPlayers = server.onlinePlayers.size
+
+            if (server.maxPlayers == currentPlayers) {
+                --server.maxPlayers
+            }
+        }
+        else if (p.uniqueId.toString() in runner) {
+            val currentPlayers = server.onlinePlayers.size
+
+            if (server.maxPlayers == currentPlayers) {
+                --server.maxPlayers
+            }
         }
 
         config.set("maxplayers", server.maxPlayers)
