@@ -28,15 +28,23 @@ import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.World
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.event.entity.EntityDeathEvent
+import org.bukkit.event.inventory.CraftItemEvent
 import org.bukkit.event.player.*
 import org.bukkit.event.player.PlayerLoginEvent.Result
+import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
+import java.io.File
+import java.io.FileOutputStream
+import java.net.URL
 import kotlin.random.Random
+import kotlin.random.Random.Default.nextInt
 
 
 /***
@@ -284,6 +292,50 @@ class AdvcTravelEvent : Listener {
 
         if (item.type == Material.DRAGON_EGG && p.uniqueId.toString() !in runner) {
             e.isCancelled = true
+        }
+    }
+
+    @EventHandler
+    fun onPlayerCraft(e: CraftItemEvent){
+        val p = e.whoClicked
+        val item = e.recipe.result
+
+        if (p.uniqueId.toString() !in runner && p.uniqueId.toString() !in administrator) {
+            if (item.type == Material.FIREWORK_ROCKET) {
+                e.isCancelled = !item.itemMeta.hasLore()
+            }
+            if (item.type == Material.END_CRYSTAL){
+                e.isCancelled = true
+            }
+        }
+    }
+
+    @EventHandler
+    fun onPlaceBlock(e: BlockPlaceEvent){
+        val p = e.player
+        val b = e.block
+
+        if (p.uniqueId.toString() !in runner && p.uniqueId.toString() !in administrator) {
+            if(p.world == Bukkit.getWorld("the_end")){
+                if (b.type == Material.LAVA){
+                    e.isCancelled = true
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    fun onEntityDeath(e: EntityDeathEvent){
+        val dead = e.entity
+        val p = dead.killer
+
+        if (p is Player) {
+            if (p.uniqueId.toString() !in runner && p.uniqueId.toString() !in administrator) {
+                if (dead.type == EntityType.EVOKER) {
+                    e.drops.clear()
+                    e.drops[0] = ItemStack(Material.EMERALD, nextInt(2)+1)
+                }
+            }
         }
     }
 }

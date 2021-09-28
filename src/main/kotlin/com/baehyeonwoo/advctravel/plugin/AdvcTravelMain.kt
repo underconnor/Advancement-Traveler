@@ -21,9 +21,16 @@ import com.baehyeonwoo.advctravel.plugin.commands.AdvcTravelKommand
 import com.baehyeonwoo.advctravel.plugin.config.AdvcTravelConfig
 import com.baehyeonwoo.advctravel.plugin.events.AdvcTpaEvent
 import com.baehyeonwoo.advctravel.plugin.events.AdvcTravelEvent
+import com.baehyeonwoo.advctravel.plugin.objects.AdvcRecipeObject
 import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.Items
+import java.lang.invoke.MethodHandles
+import java.lang.reflect.Field
+import java.lang.reflect.Modifier
 
 /***
  * @author BaeHyeonWoo
@@ -83,6 +90,19 @@ class AdvcTravelMain : JavaPlugin() {
             teams.setCanSeeFriendlyInvisibles(false)
             teams.setAllowFriendlyFire(false)
         }
+
+        // Recipe Settings
+        val firework = AdvcRecipeObject.firework()
+        Bukkit.addRecipe(firework)
+
+        // Firework Stack Limit (Thx PatrickKR)
+        val field = Item::class.java.getDeclaredField("c").apply {
+            isAccessible = true
+        }
+        val lookup = MethodHandles.privateLookupIn(Field::class.java, MethodHandles.lookup())
+        val modifiers = lookup.findVarHandle(Field::class.java, "modifiers", Int::class.javaPrimitiveType)
+        modifiers.set(field, field.modifiers and Modifier.FINAL.inv())
+        field.setInt(Items.rz, 3)
     }
 
     override fun onDisable() {
