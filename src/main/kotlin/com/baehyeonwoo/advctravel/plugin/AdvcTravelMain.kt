@@ -19,6 +19,7 @@ package com.baehyeonwoo.advctravel.plugin
 import com.baehyeonwoo.advctravel.plugin.commands.AdvcTpaKommand
 import com.baehyeonwoo.advctravel.plugin.commands.AdvcTravelKommand
 import com.baehyeonwoo.advctravel.plugin.config.AdvcTravelConfig
+import com.baehyeonwoo.advctravel.plugin.events.AdvcBanItemEvent
 import com.baehyeonwoo.advctravel.plugin.events.AdvcTpaEvent
 import com.baehyeonwoo.advctravel.plugin.events.AdvcTravelEvent
 import com.baehyeonwoo.advctravel.plugin.objects.AdvcRecipeObject
@@ -63,6 +64,7 @@ class AdvcTravelMain : JavaPlugin() {
         // Registering
         server.pluginManager.registerEvents(AdvcTravelEvent(), this)
         server.pluginManager.registerEvents(AdvcTpaEvent(), this)
+        server.pluginManager.registerEvents(AdvcBanItemEvent(), this)
         AdvcTravelKommand.advcTravelKommand()
         AdvcTpaKommand.advcTpaKommand()
 
