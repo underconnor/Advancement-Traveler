@@ -53,6 +53,9 @@ class AdvcTravelMain : JavaPlugin() {
 
         // Config and logger settings output
         AdvcTravelConfig.load(configFile)
+        
+        // TODO: AUTOMATIC RELOAD CONFIG
+        
         logger.info("Config Administrator Settings: ${config.getString("administrator")}")
         logger.info("Config Runner Settings: ${config.getString("runner")}")
 

@@ -267,8 +267,31 @@ class AdvcTravelEvent : Listener {
 
     @EventHandler
     fun onPaperServerListPing(e: PaperServerListPingEvent) {
+        val file = File("${getInstance().dataFolder}/server-icon.png")
+
+        if (!file.exists()) {
+            val imgURL =
+                URL("https://cdn.discordapp.com/attachments/882830728382013480/886135047005011968/server-icon.png")
+            val dest = ("${getInstance().dataFolder}/server-icon.png")
+            val inputStream = imgURL.openStream()
+            val outputStream = FileOutputStream(dest)
+
+            val byte = ByteArray(2048)
+            var length: Int
+
+            while (inputStream.read(byte).also { length = it } != -1) {
+                outputStream.write(byte, 0, length)
+            }
+
+            inputStream.close()
+            outputStream.close()
+        }
+
+        val icon = server.loadServerIcon(file)
+
         e.motd(text("ADVANCEMENT TRAVELER", NamedTextColor.RED, TextDecoration.BOLD))
         e.playerSample.clear()
+        e.serverIcon = icon
     }
 
     @EventHandler

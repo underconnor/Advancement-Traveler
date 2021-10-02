@@ -52,6 +52,8 @@ object AdvcTravelKommand {
                         sender.sendMessage(text("Current Runner UUID settings: ${requireNotNull(config.getString("runner").toString())}"))
                     }
                 }
+                
+                // TODO: FIX SWITCH
 //                then("switch") {
 //                    executes {
 //                        sender.sendMessage("Usage: /advc switch <status/on/off>")
