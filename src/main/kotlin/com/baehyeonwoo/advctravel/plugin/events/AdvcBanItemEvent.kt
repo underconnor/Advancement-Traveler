@@ -6,6 +6,7 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.block.Block
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -14,6 +15,7 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDeathEvent
+import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.event.entity.EntityResurrectEvent
 import org.bukkit.event.inventory.CraftItemEvent
 import org.bukkit.event.player.PlayerBucketEmptyEvent
@@ -77,6 +79,11 @@ class AdvcBanItemEvent: Listener {
                 }
             }
         }
+    }
+
+    @EventHandler
+    fun onEntityExplode(e: EntityExplodeEvent){
+        e.blockList().removeAll { x -> x.blockData.material.toString().endsWith("SHULKER_BOX") }
     }
 
     @EventHandler

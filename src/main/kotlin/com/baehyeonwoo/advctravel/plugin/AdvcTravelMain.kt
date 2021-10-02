@@ -98,7 +98,9 @@ class AdvcTravelMain : JavaPlugin() {
 
         // Recipe Settings
         val firework = AdvcRecipeObject.firework()
+        val elytra = AdvcRecipeObject.elytra()
         Bukkit.addRecipe(firework)
+        Bukkit.addRecipe(elytra)
 
         // Firework Stack Limit (Thx PatrickKR)
         val field = Item::class.java.getDeclaredField("c").apply {
