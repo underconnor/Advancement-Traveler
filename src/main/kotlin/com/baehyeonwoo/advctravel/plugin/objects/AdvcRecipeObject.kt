@@ -17,14 +17,14 @@ object AdvcRecipeObject {
     }
 
     fun firework(): Recipe {
-        val key = NamespacedKey(getInstance(), "hunter_firework")
+        val key = NamespacedKey(getInstance(), "runner_firework")
 
         val item = ItemStack(Material.FIREWORK_ROCKET, 3)
         val meta = item.itemMeta as FireworkMeta
 
         meta.power = 1
         meta.lore(listOf(
-            text("헌터 전용 폭죽")
+            text("러너 전용 폭죽")
         ))
 
         item.itemMeta = meta

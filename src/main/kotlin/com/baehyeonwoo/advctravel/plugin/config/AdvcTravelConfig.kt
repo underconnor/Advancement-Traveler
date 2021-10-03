@@ -42,6 +42,15 @@ object AdvcTravelConfig {
     @Config
     var enabled = true
 
+    @Config
+    var fadein = 0
+
+    @Config
+    var stay = 150
+
+    @Config
+    var fadeout = 0
+
     fun load(configFile: File) {
         ConfigSupport.compute(this, configFile)
     }

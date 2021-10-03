@@ -28,24 +28,19 @@ import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.World
 import org.bukkit.command.CommandSender
-import org.bukkit.entity.EntityType
+import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
-import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
-import org.bukkit.event.entity.EntityDeathEvent
-import org.bukkit.event.inventory.CraftItemEvent
 import org.bukkit.event.player.*
 import org.bukkit.event.player.PlayerLoginEvent.Result
-import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
 import kotlin.random.Random
-import kotlin.random.Random.Default.nextInt
 
 
 /***
@@ -59,9 +54,13 @@ class AdvcTravelEvent : Listener {
         return AdvcTravelMain.instance
     }
 
+    private fun getConfig(): YamlConfiguration {
+        return AdvcTravelMain.mainConfig
+    }
+
     private val server = getInstance().server
 
-    private val config = getInstance().config
+    private val config = getConfig()
 
     private val administrator = requireNotNull(config.getString("administrator").toString())
 
@@ -77,12 +76,9 @@ class AdvcTravelEvent : Listener {
     }
 
     private fun teamMsgTask(player: Player, messageContent: String) {
-        server.scheduler.runTask(
-            getInstance(),
-            Runnable {
+        server.scheduler.runTask(getInstance(), Runnable {
                 server.dispatchCommand(player as CommandSender, "teammsg $messageContent")
-            }
-        )
+            })
     }
 
     @EventHandler
@@ -209,6 +205,7 @@ class AdvcTravelEvent : Listener {
     @EventHandler
     fun onPlayerLogin(e: PlayerLoginEvent) {
         val p = e.player
+
         if (p.uniqueId.toString() in administrator) {
             if(!p.isBanned) {
                 if(e.result == Result.KICK_FULL) {
@@ -317,6 +314,4 @@ class AdvcTravelEvent : Listener {
             e.isCancelled = true
         }
     }
-
-
 }

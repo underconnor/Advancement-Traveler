@@ -23,15 +23,11 @@ import com.baehyeonwoo.advctravel.plugin.events.AdvcBanItemEvent
 import com.baehyeonwoo.advctravel.plugin.events.AdvcTpaEvent
 import com.baehyeonwoo.advctravel.plugin.events.AdvcTravelEvent
 import com.baehyeonwoo.advctravel.plugin.objects.AdvcRecipeObject
+import com.baehyeonwoo.advctravel.plugin.tasks.AdvcConfigReloadTask
 import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.Bukkit
+import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
-import net.minecraft.world.item.Item
-import net.minecraft.world.item.Items
-import java.lang.invoke.MethodHandles
-import java.lang.reflect.Field
-import java.lang.reflect.Modifier
 
 /***
  * @author BaeHyeonWoo
@@ -40,34 +36,34 @@ import java.lang.reflect.Modifier
  */
 
 class AdvcTravelMain : JavaPlugin() {
-
     companion object {
         lateinit var instance: AdvcTravelMain
             private set
+        lateinit var mainConfig: YamlConfiguration
     }
 
     private val configFile = File(dataFolder, "config.yml")
 
     override fun onEnable() {
         instance = this
+        mainConfig = YamlConfiguration.loadConfiguration(File(dataFolder, "config.yml"))
 
         // Config and logger settings output
         AdvcTravelConfig.load(configFile)
         
-        // TODO: AUTOMATIC RELOAD CONFIG
-        
-        logger.info("Config Administrator Settings: ${config.getString("administrator")}")
-        logger.info("Config Runner Settings: ${config.getString("runner")}")
+        logger.info("Config Administrator Settings: ${mainConfig.getString("administrator")}")
+        logger.info("Config Runner Settings: ${mainConfig.getString("runner")}")
 
         // Player count bug on reload (Fixed with below code)
-        server.maxPlayers = config.getInt("maxplayers") + server.onlinePlayers.asSequence().filter {
-            config.getString("administrator").toString().contains(it.uniqueId.toString())
+        server.maxPlayers = mainConfig.getInt("maxplayers") + server.onlinePlayers.asSequence().filter {
+            mainConfig.getString("administrator").toString().contains(it.uniqueId.toString())
         }.toMutableList().size
 
         // Registering
         server.pluginManager.registerEvents(AdvcTravelEvent(), this)
         server.pluginManager.registerEvents(AdvcTpaEvent(), this)
         server.pluginManager.registerEvents(AdvcBanItemEvent(), this)
+        server.scheduler.runTaskTimer(this, AdvcConfigReloadTask(), 0L, 1L)
         AdvcTravelKommand.advcTravelKommand()
         AdvcTpaKommand.advcTpaKommand()
 
@@ -99,26 +95,17 @@ class AdvcTravelMain : JavaPlugin() {
         // Recipe Settings
         val firework = AdvcRecipeObject.firework()
         val elytra = AdvcRecipeObject.elytra()
-        Bukkit.addRecipe(firework)
-        Bukkit.addRecipe(elytra)
-
-        // Firework Stack Limit (Thx PatrickKR)
-        val field = Item::class.java.getDeclaredField("c").apply {
-            isAccessible = true
-        }
-        val lookup = MethodHandles.privateLookupIn(Field::class.java, MethodHandles.lookup())
-        val modifiers = lookup.findVarHandle(Field::class.java, "modifiers", Int::class.javaPrimitiveType)
-        modifiers.set(field, field.modifiers and Modifier.FINAL.inv())
-        field.setInt(Items.rz, 3)
+        server.addRecipe(firework)
+        server.addRecipe(elytra)
     }
 
     override fun onDisable() {
         // Player count bug on close (Fixed with below code)
         val adminCount = server.onlinePlayers.asSequence().filter {
-            config.getString("administrator").toString().contains(it.uniqueId.toString())
+            mainConfig.getString("administrator").toString().contains(it.uniqueId.toString())
         }.toMutableList().size
 
-        config.set("maxplayers", server.maxPlayers - adminCount)
+        mainConfig.set("maxplayers", server.maxPlayers - adminCount)
         saveConfig()
     }
 }

@@ -16,14 +16,15 @@
 
 package com.baehyeonwoo.advctravel.plugin.commands
 
-import com.baehyeonwoo.advctravel.plugin.objects.AdvcTpaObject
 import com.baehyeonwoo.advctravel.plugin.AdvcTravelMain
+import com.baehyeonwoo.advctravel.plugin.objects.AdvcTpaObject
 import com.baehyeonwoo.advctravel.plugin.tasks.AdvcTpaTask
 import io.github.monun.kommand.getValue
 import io.github.monun.kommand.kommand
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
+import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
 import java.util.*
@@ -38,10 +39,12 @@ object AdvcTpaKommand {
         return AdvcTravelMain.instance
     }
 
-    val tpaMap: HashMap<Player, AdvcTpaObject> = HashMap()
+    private fun getConfig(): YamlConfiguration {
+        return AdvcTravelMain.mainConfig
+    }
 
-    private val server = getInstance().server
-    private val config = getInstance().config
+    val tpaMap: HashMap<Player, AdvcTpaObject> = HashMap()
+    private val config = getConfig()
 
     var UUID.sendTpaDelay: Long
         get() {
