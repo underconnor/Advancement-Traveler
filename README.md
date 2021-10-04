@@ -4,7 +4,7 @@ Large-scale Viewer-participating Content Plugin for [komq](https://youtube.com/ì
 
 ## Build
 
-`./gradlew clean dist`
+`./gradlew clean paperJar`
 
 ---
 

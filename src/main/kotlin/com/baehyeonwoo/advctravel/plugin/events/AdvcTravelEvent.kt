@@ -17,7 +17,7 @@
 package com.baehyeonwoo.advctravel.plugin.events
 
 import com.baehyeonwoo.advctravel.plugin.AdvcTravelMain
-import com.baehyeonwoo.advctravel.plugin.commands.AdvcTravelKommand
+import com.baehyeonwoo.advctravel.plugin.objects.AdvcWhitelist
 import com.destroystokyo.paper.event.server.PaperServerListPingEvent
 import io.papermc.paper.event.player.AsyncChatEvent
 import net.kyori.adventure.text.Component.text
@@ -29,8 +29,6 @@ import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.World
 import org.bukkit.command.CommandSender
-import org.bukkit.configuration.file.FileConfiguration
-import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -56,15 +54,7 @@ class AdvcTravelEvent : Listener {
         return AdvcTravelMain.instance
     }
 
-    private fun getConfig(): FileConfiguration {
-        return getInstance().config
-    }
-
     private val server = getInstance().server
-
-    private val administrator = requireNotNull(getConfig().getString("administrator").toString())
-
-    private val runner = requireNotNull(getConfig().getString("runner").toString())
 
     private val adminTeam = server.scoreboardManager.mainScoreboard.getTeam("Admin")
 
@@ -89,14 +79,14 @@ class AdvcTravelEvent : Listener {
         val sm = Bukkit.getScoreboardManager()
         val sc = sm.mainScoreboard
 
-        if (p.uniqueId.toString() in runner){
-            val runner = sc.getTeam("Runner")
+        if (p.uniqueId.toString() in getInstance().config.getString("runner").toString()){
+            val runner = sc.getTeam("runner")
             runner?.addEntry(p.name)
-        } else if (p.uniqueId.toString() !in runner && p.uniqueId.toString() !in administrator) {
+        } else if (p.uniqueId.toString() !in getInstance().config.getString("runner").toString() && p.uniqueId.toString() !in getInstance().config.getString("administrator").toString()) {
             val hunter = sc.getTeam("Hunter")
             hunter?.addEntry(p.name)
         }
-        else if (p.uniqueId.toString() in administrator) {
+        else if (p.uniqueId.toString() in getInstance().config.getString("administrator").toString()) {
             val admin = sc.getTeam("Admin")
             admin?.addEntry(p.name)
         }
@@ -113,10 +103,10 @@ class AdvcTravelEvent : Listener {
         val p = e.player
         val advancement = e.advancement
 
-        if (p.uniqueId.toString() in runner) {
+        if (p.uniqueId.toString() in getInstance().config.getString("runner").toString()) {
             if (!advancement.key.toString().startsWith("minecraft:recipes") && !advancement.key.toString().endsWith("root")) {
                 ++server.maxPlayers
-                getConfig().set("maxplayers", server.maxPlayers)
+                getInstance().config.set("maxplayers", server.maxPlayers)
                 getInstance().saveConfig()
             }
         }
@@ -128,7 +118,7 @@ class AdvcTravelEvent : Listener {
         val msgComponent = e.message()
         val msg = (msgComponent as TextComponent).content()
 
-        if (p.uniqueId.toString() in administrator || (adminTeam != null) && adminTeam.hasEntry(p.name)) {
+        if (p.uniqueId.toString() in getInstance().config.getString("administrator").toString() || (adminTeam != null) && adminTeam.hasEntry(p.name)) {
             teamMsgTask(p, msg)
             e.isCancelled = true
 
@@ -148,7 +138,7 @@ class AdvcTravelEvent : Listener {
         val c = e.message
 
         if(c.startsWith("/tpa") || c.startsWith("/teammsg") || c.startsWith("/tm")) e.isCancelled = false
-        else e.isCancelled = p.uniqueId.toString() !in administrator
+        else e.isCancelled = p.uniqueId.toString() !in getInstance().config.getString("administrator").toString()
     }
 
     @EventHandler
@@ -170,74 +160,50 @@ class AdvcTravelEvent : Listener {
         }
     }
 
-    /* (Team으로 해결)
-    @EventHandler
-    fun onEntityDamageByEntity(e: EntityDamageByEntityEvent) {
-        if (e.entity is Player) {
-            var player: Player? = null
-            when (val damager = e.damager) {
-                is Player -> {
-                    player = damager
-                }
-                is Tameable -> {
-                    if (damager is Wolf) {
-                        if (!runner.contains(damager.target?.uniqueId.toString())) {
-                            damager.isAngry = false
-                        }
-
-                    }
-
-                    player = damager.owner as Player
-                }
-                is Projectile -> {
-                    if (damager.shooter is Player) {
-                        player = damager.shooter as Player
-                    }
-                }
-            }
-            if ((player != null) && !runner.contains(player.uniqueId.toString()) && !runner.contains(e.entity.uniqueId.toString())) {
-                e.isCancelled = true
-            }
-        }
-    }
-    */
-
     @EventHandler
     fun onPlayerLogin(e: PlayerLoginEvent) {
         val p = e.player
+        val allows = AdvcWhitelist.allows
 
-        if (p.uniqueId.toString() in administrator) {
-            if(!p.isBanned) {
-                if(e.result == Result.KICK_FULL) {
-                    e.allow()
+        if (p.name !in allows) e.disallow(Result.KICK_WHITELIST, text("화이트리스트 유저가 아니십니다. 서버에 접속하지 말아주세요."))
+        else {
+            if (p.uniqueId.toString() in getInstance().config.getString("administrator").toString()) {
+                if (!p.isBanned) {
+                    if (e.result == Result.KICK_FULL) {
+                        e.allow()
+                        ++server.maxPlayers
+                    }
                 }
-                ++server.maxPlayers
-            }
-        }
-        else if (p.uniqueId.toString() in runner) {
-            if(!p.isBanned) {
-                if (e.result == Result.KICK_FULL) {
-                    e.allow()
+            } else if (p.uniqueId.toString() in getInstance().config.getString("runner").toString()) {
+                if (!p.isBanned) {
+                    if (e.result == Result.KICK_FULL) {
+                        e.allow()
+                        ++server.maxPlayers
+                    }
                 }
-                ++server.maxPlayers
             }
+
+            getInstance().config.set("maxplayers", server.maxPlayers)
+            getInstance().saveConfig()
         }
-        getConfig().set("maxplayers", server.maxPlayers)
-        getInstance().saveConfig()
     }
 
     @EventHandler
     fun onPlayerQuit(e: PlayerQuitEvent) {
         val p = e.player
 
-        if (p.uniqueId.toString() in administrator) {
-            --server.maxPlayers
+        if (p.uniqueId.toString() in getInstance().config.getString("administrator").toString()) {
+            val currentPlayers = server.onlinePlayers.size
+
+            if (server.maxPlayers == currentPlayers) --server.maxPlayers
         }
-        else if (p.uniqueId.toString() in runner) {
-            --server.maxPlayers
+        else if (p.uniqueId.toString() in getInstance().config.getString("runner").toString()) {
+            val currentPlayers = server.onlinePlayers.size
+
+            if (server.maxPlayers == currentPlayers) --server.maxPlayers
         }
 
-        getConfig().set("maxplayers", server.maxPlayers)
+        getInstance().config.set("maxplayers", server.maxPlayers)
         getInstance().saveConfig()
     }
 
@@ -288,7 +254,7 @@ class AdvcTravelEvent : Listener {
         val p = e.player
         val block = e.clickedBlock?.type
 
-        if (p.uniqueId.toString() !in runner) {
+        if (p.uniqueId.toString() !in getInstance().config.getString("runner").toString()) {
             if (e.action == Action.LEFT_CLICK_BLOCK || e.action == Action.RIGHT_CLICK_BLOCK) {
                 if (block != null && !block.isAir && block == Material.END_PORTAL_FRAME || block == Material.DRAGON_EGG) {
                     e.isCancelled = true
@@ -302,7 +268,7 @@ class AdvcTravelEvent : Listener {
         val p = e.player
         val item = e.item.itemStack
 
-        if (item.type == Material.DRAGON_EGG && p.uniqueId.toString() !in runner) {
+        if (item.type == Material.DRAGON_EGG && p.uniqueId.toString() !in getInstance().config.getString("runner").toString()) {
             e.isCancelled = true
         }
     }

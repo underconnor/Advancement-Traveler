@@ -23,11 +23,14 @@ import com.baehyeonwoo.advctravel.plugin.events.AdvcBanItemEvent
 import com.baehyeonwoo.advctravel.plugin.events.AdvcTpaEvent
 import com.baehyeonwoo.advctravel.plugin.events.AdvcTravelEvent
 import com.baehyeonwoo.advctravel.plugin.objects.AdvcRecipeObject
+import com.baehyeonwoo.advctravel.plugin.objects.AdvcWhitelist
 import com.baehyeonwoo.advctravel.plugin.tasks.AdvcConfigReloadTask
+import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.plugin.java.JavaPlugin
+import org.bukkit.scoreboard.DisplaySlot
 import java.io.File
+import java.nio.charset.Charset
 
 /***
  * @author BaeHyeonWoo
@@ -43,8 +46,12 @@ class AdvcTravelMain : JavaPlugin() {
 
     private val configFile = File(dataFolder, "config.yml")
 
+    private val whitelistFile = File(dataFolder, "Whitelist.txt")
+
     override fun onEnable() {
         instance = this
+
+        AdvcWhitelist.load(whitelistFile)
 
         // Config and logger settings output
         AdvcTravelConfig.load(configFile)
@@ -68,6 +75,11 @@ class AdvcTravelMain : JavaPlugin() {
         // ScoreboardManager
         val sm = server.scoreboardManager
         val sc = sm.mainScoreboard
+
+        val health = sc.getObjective("Health")
+        if (health == null) sc.registerNewObjective("Health", "heatlh", text("♥", NamedTextColor.RED))
+
+        health?.displaySlot = DisplaySlot.BELOW_NAME
 
         val hunter = sc.getTeam("Hunter")
         if (hunter == null) sc.registerNewTeam("Hunter")

@@ -18,6 +18,7 @@ package com.baehyeonwoo.advctravel.plugin.commands
 
 import com.baehyeonwoo.advctravel.plugin.AdvcTravelMain
 import com.baehyeonwoo.advctravel.plugin.events.AdvcBanItemEvent
+import com.baehyeonwoo.advctravel.plugin.events.AdvcTpaEvent
 import com.baehyeonwoo.advctravel.plugin.events.AdvcTravelEvent
 import io.github.monun.kommand.StringType
 import io.github.monun.kommand.getValue
@@ -87,10 +88,11 @@ object AdvcTravelKommand {
                             val enabled = getConfig().getBoolean("enabled")
                             if (enabled) {
                                 getConfig().set("enabled", false)
-                                HandlerList.unregisterAll(AdvcTravelEvent())
-                                HandlerList.unregisterAll(AdvcBanItemEvent())
+                                HandlerList.unregisterAll()
+                                server.pluginManager.registerEvents(AdvcTpaEvent(), getInstance())
                                 getInstance().saveConfig()
                                 getInstance().reloadConfig()
+                                sender.sendMessage(text("Advc is Now Disabled!", NamedTextColor.GREEN))
                             }
                             else {
                                 sender.sendMessage(text("Advc is Already Disabled.", NamedTextColor.RED))
