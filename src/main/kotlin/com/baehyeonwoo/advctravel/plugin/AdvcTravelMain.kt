@@ -39,24 +39,22 @@ class AdvcTravelMain : JavaPlugin() {
     companion object {
         lateinit var instance: AdvcTravelMain
             private set
-        lateinit var mainConfig: YamlConfiguration
     }
 
     private val configFile = File(dataFolder, "config.yml")
 
     override fun onEnable() {
         instance = this
-        mainConfig = YamlConfiguration.loadConfiguration(File(dataFolder, "config.yml"))
 
         // Config and logger settings output
         AdvcTravelConfig.load(configFile)
         
-        logger.info("Config Administrator Settings: ${mainConfig.getString("administrator")}")
-        logger.info("Config Runner Settings: ${mainConfig.getString("runner")}")
+        logger.info("Config Administrator Settings: ${config.getString("administrator")}")
+        logger.info("Config Runner Settings: ${config.getString("runner")}")
 
         // Player count bug on reload (Fixed with below code)
-        server.maxPlayers = mainConfig.getInt("maxplayers") + server.onlinePlayers.asSequence().filter {
-            mainConfig.getString("administrator").toString().contains(it.uniqueId.toString())
+        server.maxPlayers = config.getInt("maxplayers") + server.onlinePlayers.asSequence().filter {
+            config.getString("administrator").toString().contains(it.uniqueId.toString())
         }.toMutableList().size
 
         // Registering
@@ -102,10 +100,10 @@ class AdvcTravelMain : JavaPlugin() {
     override fun onDisable() {
         // Player count bug on close (Fixed with below code)
         val adminCount = server.onlinePlayers.asSequence().filter {
-            mainConfig.getString("administrator").toString().contains(it.uniqueId.toString())
+            config.getString("administrator").toString().contains(it.uniqueId.toString())
         }.toMutableList().size
 
-        mainConfig.set("maxplayers", server.maxPlayers - adminCount)
+        config.set("maxplayers", server.maxPlayers - adminCount)
         saveConfig()
     }
 }

@@ -24,6 +24,7 @@ import io.github.monun.kommand.kommand
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
+import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
@@ -39,12 +40,11 @@ object AdvcTpaKommand {
         return AdvcTravelMain.instance
     }
 
-    private fun getConfig(): YamlConfiguration {
-        return AdvcTravelMain.mainConfig
+    private fun getConfig(): FileConfiguration {
+        return getInstance().config
     }
 
     val tpaMap: HashMap<Player, AdvcTpaObject> = HashMap()
-    private val config = getConfig()
 
     var UUID.sendTpaDelay: Long
         get() {
@@ -82,7 +82,7 @@ object AdvcTpaKommand {
                         else if (System.currentTimeMillis() - sender.uniqueId.sendTpaDelay < 1200000) sender.sendMessage(text("얘! ${20 - TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - sender.uniqueId.sendTpaDelay)}분 뒤에 할 수 있단다!",NamedTextColor.RED))
                         else if (runner?.entries?.contains(receiver.name) == true) sender.sendMessage(text("애! 러너한테 텔레포트하면 그게 데스런이니?", NamedTextColor.RED))
                         else if (runner?.entries?.contains(sender.name) == true) sender.sendMessage(text("얘! 러너가 텔레포트하면 그게 데스런이니?", NamedTextColor.RED))
-                        else if (config.getString("administrator").toString().contains(receiver.uniqueId.toString())) sender.sendMessage(text("얘! 관리자한테 텔레포트하면 뭉탱이로 유리게슝 당한단다!", NamedTextColor.RED))
+                        else if (getConfig().getString("administrator").toString().contains(receiver.uniqueId.toString())) sender.sendMessage(text("얘! 관리자한테 텔레포트하면 뭉탱이로 유리게슝 당한단다!", NamedTextColor.RED))
 
                         else {
                             receiver.sendMessage(

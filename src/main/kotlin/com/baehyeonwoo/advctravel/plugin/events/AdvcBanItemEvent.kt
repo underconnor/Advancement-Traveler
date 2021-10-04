@@ -3,6 +3,7 @@ package com.baehyeonwoo.advctravel.plugin.events
 import com.baehyeonwoo.advctravel.plugin.AdvcTravelMain
 import org.bukkit.Material
 import org.bukkit.World
+import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
@@ -19,18 +20,22 @@ import org.bukkit.event.inventory.CraftItemEvent
 import org.bukkit.event.player.PlayerBucketEmptyEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
+import org.bukkit.plugin.Plugin
 import kotlin.random.Random
 
 class AdvcBanItemEvent: Listener {
-    private fun getConfig(): YamlConfiguration {
-        return AdvcTravelMain.mainConfig
+    private fun getInstance(): Plugin {
+        return AdvcTravelMain.instance
+    }
+
+    private fun getConfig(): FileConfiguration {
+        return getInstance().config
     }
 
     // 코드를 읽을 줄 아시는 개발자분들은 대충 보고 넘어가주세요 ;ㅁ;
 
-    private val config = getConfig()
-    private val administrator = requireNotNull(config.getString("administrator").toString())
-    private val runner = requireNotNull(config.getString("runner").toString())
+    private val administrator = requireNotNull(getConfig().getString("administrator").toString())
+    private val runner = requireNotNull(getConfig().getString("runner").toString())
 
     @EventHandler
     fun onPlayerCraft (e: CraftItemEvent) {

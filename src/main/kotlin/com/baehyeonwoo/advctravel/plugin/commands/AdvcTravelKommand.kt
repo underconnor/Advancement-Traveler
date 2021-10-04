@@ -19,7 +19,6 @@ package com.baehyeonwoo.advctravel.plugin.commands
 import com.baehyeonwoo.advctravel.plugin.AdvcTravelMain
 import com.baehyeonwoo.advctravel.plugin.events.AdvcBanItemEvent
 import com.baehyeonwoo.advctravel.plugin.events.AdvcTravelEvent
-import com.baehyeonwoo.advctravel.plugin.objects.AdvcConfigObject
 import io.github.monun.kommand.StringType
 import io.github.monun.kommand.getValue
 import io.github.monun.kommand.kommand
@@ -27,6 +26,7 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.title.Title.Times
 import net.kyori.adventure.title.Title.title
+import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.event.HandlerList
 import org.bukkit.plugin.Plugin
 import java.time.Duration
@@ -41,38 +41,41 @@ object AdvcTravelKommand {
         return AdvcTravelMain.instance
     }
 
+    private fun getConfig(): FileConfiguration{
+        return getInstance().config
+    }
+
     private val server = getInstance().server
 
     fun advcTravelKommand() {
         getInstance().kommand {
             register("advc") {
-                val config = AdvcConfigObject.config
                 then("administrator") {
                     executes {
-                        sender.sendMessage(text("Current Administrator UUID settings: ${requireNotNull(config.getString("administrator").toString())}"))
+                        sender.sendMessage(text("Current Administrator UUID settings: ${requireNotNull(getConfig().getString("administrator").toString())}"))
                     }
                 }
                 then("runner") {
                     executes {
-                        sender.sendMessage(text("Current Runner UUID settings: ${requireNotNull(config.getString("runner").toString())}"))
+                        sender.sendMessage(text("Current Runner UUID settings: ${requireNotNull(getConfig().getString("runner").toString())}"))
                     }
                 }
                 then("switch") {
                     then("status") {
                         executes {
-                            sender.sendMessage(text(config.getString("enabled").toString()))
+                            sender.sendMessage(text(getConfig().getString("enabled").toString()))
                         }
                     }
                     then("on") {
                         executes {
-                            val enabled = config.getBoolean("enabled")
+                            val enabled = getConfig().getBoolean("enabled")
                             if (!enabled){
-                                config.set("enabled", true)
+                                getConfig().set("enabled", true)
                                 server.pluginManager.registerEvents(AdvcTravelEvent(), getInstance())
                                 server.pluginManager.registerEvents(AdvcBanItemEvent(), getInstance())
                                 sender.sendMessage(text("Advc is Now Enabled!", NamedTextColor.GREEN))
-                                AdvcConfigObject.config.load(AdvcConfigObject.configFile)
-                                AdvcConfigObject.config.save(AdvcConfigObject.configFile)
+                                getInstance().saveConfig()
+                                getInstance().reloadConfig()
                             }
                             else {
                                 sender.sendMessage(text("Advc is Already Enabled.", NamedTextColor.RED))
@@ -81,13 +84,13 @@ object AdvcTravelKommand {
                     }
                     then("off") {
                         executes {
-                            val enabled = config.getBoolean("enabled")
+                            val enabled = getConfig().getBoolean("enabled")
                             if (enabled) {
-                                config.set("enabled", false)
+                                getConfig().set("enabled", false)
                                 HandlerList.unregisterAll(AdvcTravelEvent())
                                 HandlerList.unregisterAll(AdvcBanItemEvent())
-                                AdvcConfigObject.config.load(AdvcConfigObject.configFile)
-                                AdvcConfigObject.config.save(AdvcConfigObject.configFile)
+                                getInstance().saveConfig()
+                                getInstance().reloadConfig()
                             }
                             else {
                                 sender.sendMessage(text("Advc is Already Disabled.", NamedTextColor.RED))
@@ -105,15 +108,14 @@ object AdvcTravelKommand {
                                         val stay: Int by it
                                         val fadeout: Int by it
 
-                                        config.set("fadein", fadein)
-                                        config.set("fadein", stay)
-                                        config.set("fadein", fadeout)
+                                        getConfig().set("fadein", fadein)
+                                        getConfig().set("stay", stay)
+                                        getConfig().set("fadeout", fadeout)
                                         sender.sendMessage(text("Title ticks has been set to:\n" +
                                                 "Fade In: $fadein\n" +
                                                 "Stay: $stay\n" +
                                                 "Fade Out: $fadeout"))
-                                        AdvcConfigObject.config.load(AdvcConfigObject.configFile)
-                                        AdvcConfigObject.config.save(AdvcConfigObject.configFile)
+                                        getInstance().saveConfig()
                                     }
                                 }
                             }
@@ -126,9 +128,9 @@ object AdvcTravelKommand {
                                     executes {
                                         val title: String by it
                                         val subtitle: String by it
-                                        val fadein = config.getInt("fadein")
-                                        val stay = config.getInt("stay")
-                                        val fadeout = config.getInt("fadeout")
+                                        val fadein = getConfig().getInt("fadein")
+                                        val stay = getConfig().getInt("stay")
+                                        val fadeout = getConfig().getInt("fadeout")
 
                                         server.onlinePlayers.forEach { p ->
                                             p.showTitle(title(text(title), text(subtitle),

@@ -17,6 +17,7 @@
 package com.baehyeonwoo.advctravel.plugin.events
 
 import com.baehyeonwoo.advctravel.plugin.AdvcTravelMain
+import com.baehyeonwoo.advctravel.plugin.commands.AdvcTravelKommand
 import com.destroystokyo.paper.event.server.PaperServerListPingEvent
 import io.papermc.paper.event.player.AsyncChatEvent
 import net.kyori.adventure.text.Component.text
@@ -28,6 +29,7 @@ import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.World
 import org.bukkit.command.CommandSender
+import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -54,17 +56,15 @@ class AdvcTravelEvent : Listener {
         return AdvcTravelMain.instance
     }
 
-    private fun getConfig(): YamlConfiguration {
-        return AdvcTravelMain.mainConfig
+    private fun getConfig(): FileConfiguration {
+        return getInstance().config
     }
 
     private val server = getInstance().server
 
-    private val config = getConfig()
+    private val administrator = requireNotNull(getConfig().getString("administrator").toString())
 
-    private val administrator = requireNotNull(config.getString("administrator").toString())
-
-    private val runner = requireNotNull(config.getString("runner").toString())
+    private val runner = requireNotNull(getConfig().getString("runner").toString())
 
     private val adminTeam = server.scoreboardManager.mainScoreboard.getTeam("Admin")
 
@@ -116,7 +116,7 @@ class AdvcTravelEvent : Listener {
         if (p.uniqueId.toString() in runner) {
             if (!advancement.key.toString().startsWith("minecraft:recipes") && !advancement.key.toString().endsWith("root")) {
                 ++server.maxPlayers
-                config.set("maxplayers", server.maxPlayers)
+                getConfig().set("maxplayers", server.maxPlayers)
                 getInstance().saveConfig()
             }
         }
@@ -222,7 +222,7 @@ class AdvcTravelEvent : Listener {
                 }
             }
         }
-        config.set("maxplayers", server.maxPlayers)
+        getConfig().set("maxplayers", server.maxPlayers)
         getInstance().saveConfig()
     }
 
@@ -245,7 +245,7 @@ class AdvcTravelEvent : Listener {
             }
         }
 
-        config.set("maxplayers", server.maxPlayers)
+        getConfig().set("maxplayers", server.maxPlayers)
         getInstance().saveConfig()
     }
 
