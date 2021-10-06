@@ -16,30 +16,6 @@ object AdvcRecipeObject {
         return AdvcTravelMain.instance
     }
 
-    fun firework(): Recipe {
-        val key = NamespacedKey(getInstance(), "runner_firework")
-
-        val item = ItemStack(Material.FIREWORK_ROCKET, 3)
-        val meta = item.itemMeta as FireworkMeta
-
-        meta.power = 1
-        meta.lore(listOf(
-            text("러너 전용 폭죽")
-        ))
-
-        item.itemMeta = meta
-
-        val recipe = ShapedRecipe(key, item)
-
-        recipe.shape("G", "A", "P")
-
-        recipe.setIngredient('G', Material.GUNPOWDER)
-        recipe.setIngredient('A', Material.ARROW)
-        recipe.setIngredient('P', Material.PAPER)
-
-        return recipe
-    }
-
     fun elytra(): Recipe{
         val key = NamespacedKey(getInstance(), "hunter_elytra")
 

@@ -43,9 +43,6 @@ class AdvcBanItemEvent: Listener {
                 else -> e.isCancelled = false
             }
         }
-        else {
-            if(item.type == Material.FIREWORK_ROCKET) e.isCancelled = !item.itemMeta.hasLore()
-        }
     }
 
     @EventHandler
@@ -140,6 +137,11 @@ class AdvcBanItemEvent: Listener {
         if (p.uniqueId.toString() !in runner && p.uniqueId.toString() !in administrator) {
             if (a == Action.RIGHT_CLICK_AIR) {
                 if (p.inventory.itemInMainHand.type == Material.FIREWORK_ROCKET || p.inventory.itemInOffHand.type == Material.FIREWORK_ROCKET) {
+                    e.isCancelled = true
+                }
+            }
+            if (a == Action.RIGHT_CLICK_BLOCK) {
+                if(e.clickedBlock?.type == Material.BREWING_STAND){
                     e.isCancelled = true
                 }
             }

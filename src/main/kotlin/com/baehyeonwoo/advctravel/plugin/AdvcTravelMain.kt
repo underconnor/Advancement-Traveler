@@ -103,9 +103,7 @@ class AdvcTravelMain : JavaPlugin() {
         }
 
         // Recipe Settings
-        val firework = AdvcRecipeObject.firework()
         val elytra = AdvcRecipeObject.elytra()
-        server.addRecipe(firework)
         server.addRecipe(elytra)
     }
 
