@@ -1,6 +1,7 @@
 package com.baehyeonwoo.advctravel.plugin.events
 
 import com.baehyeonwoo.advctravel.plugin.AdvcTravelMain
+import com.destroystokyo.paper.event.player.PlayerElytraBoostEvent
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.entity.EntityType
@@ -135,16 +136,19 @@ class AdvcBanItemEvent: Listener {
         val p = e.player
         val a = e.action
         if (p.uniqueId.toString() !in runner && p.uniqueId.toString() !in administrator) {
-            if (a == Action.RIGHT_CLICK_AIR) {
-                if (p.inventory.itemInMainHand.type == Material.FIREWORK_ROCKET || p.inventory.itemInOffHand.type == Material.FIREWORK_ROCKET) {
+            if(a == Action.RIGHT_CLICK_BLOCK || a == Action.RIGHT_CLICK_AIR){
+                if(p.inventory.itemInMainHand.type.toString().endsWith("POTION") || p.inventory.itemInOffHand.type.toString().endsWith("POTION")){
                     e.isCancelled = true
                 }
             }
-            if (a == Action.RIGHT_CLICK_BLOCK) {
-                if(e.clickedBlock?.type == Material.BREWING_STAND){
-                    e.isCancelled = true
-                }
-            }
+        }
+    }
+
+    @EventHandler
+    fun onPlayerElytraBoost(e: PlayerElytraBoostEvent){
+        val p = e.player
+        if (p.uniqueId.toString() !in runner && p.uniqueId.toString() !in administrator) {
+            e.isCancelled = true
         }
     }
     
