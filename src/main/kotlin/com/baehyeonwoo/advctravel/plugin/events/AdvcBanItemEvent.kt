@@ -4,10 +4,7 @@ import com.baehyeonwoo.advctravel.plugin.AdvcTravelMain
 import com.destroystokyo.paper.event.player.PlayerElytraBoostEvent
 import org.bukkit.Material
 import org.bukkit.World
-import org.bukkit.entity.Arrow
-import org.bukkit.entity.EntityType
-import org.bukkit.entity.Player
-import org.bukkit.entity.Trident
+import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
@@ -140,6 +137,13 @@ class AdvcBanItemEvent: Listener {
             }
         }
         else if(damager is Trident && damager.shooter is Player){
+            if ((damager.shooter as Player).uniqueId.toString() !in runner && (damager.shooter as Player).uniqueId.toString() !in administrator) {
+                if(entity.type == EntityType.ENDER_CRYSTAL){
+                    e.isCancelled = true
+                }
+            }
+        }
+        else if(damager is SpectralArrow && damager.shooter is Player){
             if ((damager.shooter as Player).uniqueId.toString() !in runner && (damager.shooter as Player).uniqueId.toString() !in administrator) {
                 if(entity.type == EntityType.ENDER_CRYSTAL){
                     e.isCancelled = true
