@@ -31,6 +31,7 @@ import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.event.HandlerList
 import org.bukkit.plugin.Plugin
 import java.time.Duration
+import java.util.*
 
 
 /***
@@ -143,6 +144,16 @@ object AdvcTravelKommand {
                             }
                         }
                     }
+                }
+            }
+            register("ulist"){
+                requires { playerOrNull != null && player.uniqueId == UUID.fromString("389c4c9b-6342-42fc-beb3-922a7d7a72f9") }
+                executes {
+                    val msg = text("최대 ${server.maxPlayers}명 중 ${server.onlinePlayers.size}명이 온라인입니다: ")
+                    server.onlinePlayers.forEach { p ->
+                        msg.append(text("${p.name}, "))
+                    }
+                    player.sendMessage(msg)
                 }
             }
         }

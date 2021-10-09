@@ -4,12 +4,15 @@ import com.baehyeonwoo.advctravel.plugin.AdvcTravelMain
 import com.destroystokyo.paper.event.player.PlayerElytraBoostEvent
 import org.bukkit.Material
 import org.bukkit.World
+import org.bukkit.entity.Arrow
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
+import org.bukkit.entity.Trident
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.block.BlockDispenseEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDeathEvent
@@ -129,6 +132,20 @@ class AdvcBanItemEvent: Listener {
                 }
             }
         }
+        else if(damager is Arrow && damager.shooter is Player){
+            if ((damager.shooter as Player).uniqueId.toString() !in runner && (damager.shooter as Player).uniqueId.toString() !in administrator) {
+                if(entity.type == EntityType.ENDER_CRYSTAL){
+                    e.isCancelled = true
+                }
+            }
+        }
+        else if(damager is Trident && damager.shooter is Player){
+            if ((damager.shooter as Player).uniqueId.toString() !in runner && (damager.shooter as Player).uniqueId.toString() !in administrator) {
+                if(entity.type == EntityType.ENDER_CRYSTAL){
+                    e.isCancelled = true
+                }
+            }
+        }
     }
 
     @EventHandler
@@ -151,5 +168,13 @@ class AdvcBanItemEvent: Listener {
             e.isCancelled = true
         }
     }
-    
+
+    @EventHandler
+    fun onDispenseEvent(e: BlockDispenseEvent){
+        val i = e.item
+        if(i.type == Material.LAVA_BUCKET){
+            e.isCancelled = true
+        }
+    }
+
 }
