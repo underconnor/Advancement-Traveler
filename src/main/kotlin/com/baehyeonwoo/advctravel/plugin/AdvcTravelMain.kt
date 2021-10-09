@@ -23,14 +23,12 @@ import com.baehyeonwoo.advctravel.plugin.events.AdvcBanItemEvent
 import com.baehyeonwoo.advctravel.plugin.events.AdvcTpaEvent
 import com.baehyeonwoo.advctravel.plugin.events.AdvcTravelEvent
 import com.baehyeonwoo.advctravel.plugin.objects.AdvcRecipeObject
-import com.baehyeonwoo.advctravel.plugin.objects.AdvcWhitelist
 import com.baehyeonwoo.advctravel.plugin.tasks.AdvcConfigReloadTask
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scoreboard.DisplaySlot
 import java.io.File
-import java.nio.charset.Charset
 
 /***
  * @author BaeHyeonWoo
@@ -50,8 +48,6 @@ class AdvcTravelMain : JavaPlugin() {
 
     override fun onEnable() {
         instance = this
-
-        AdvcWhitelist.load(whitelistFile)
 
         // Config and logger settings output
         AdvcTravelConfig.load(configFile)

@@ -17,7 +17,6 @@
 package com.baehyeonwoo.advctravel.plugin.events
 
 import com.baehyeonwoo.advctravel.plugin.AdvcTravelMain
-import com.baehyeonwoo.advctravel.plugin.objects.AdvcWhitelist
 import com.destroystokyo.paper.event.server.PaperServerListPingEvent
 import io.papermc.paper.event.player.AsyncChatEvent
 import net.kyori.adventure.text.Component.text
@@ -163,29 +162,26 @@ class AdvcTravelEvent : Listener {
     @EventHandler
     fun onPlayerLogin(e: PlayerLoginEvent) {
         val p = e.player
-        val allows = AdvcWhitelist.allows
 
-        if (p.name !in allows) e.disallow(Result.KICK_WHITELIST, text("화이트리스트 유저가 아니십니다. 서버에 접속하지 말아주세요."))
-        else {
-            if (p.uniqueId.toString() in getInstance().config.getString("administrator").toString()) {
-                if (!p.isBanned) {
-                    if (e.result == Result.KICK_FULL) {
-                        e.allow()
-                        ++server.maxPlayers
-                    }
-                }
-            } else if (p.uniqueId.toString() in getInstance().config.getString("runner").toString()) {
-                if (!p.isBanned) {
-                    if (e.result == Result.KICK_FULL) {
-                        e.allow()
-                        ++server.maxPlayers
-                    }
+        if (p.uniqueId.toString() in getInstance().config.getString("administrator").toString()) {
+            if (!p.isBanned) {
+                if (e.result == Result.KICK_FULL) {
+                    e.allow()
+                    ++server.maxPlayers
                 }
             }
-
-            getInstance().config.set("maxplayers", server.maxPlayers)
-            getInstance().saveConfig()
+        } else if (p.uniqueId.toString() in getInstance().config.getString("runner").toString()) {
+            if (!p.isBanned) {
+                if (e.result == Result.KICK_FULL) {
+                    e.allow()
+                    ++server.maxPlayers
+                }
+            }
         }
+
+        getInstance().config.set("maxplayers", server.maxPlayers)
+        getInstance().saveConfig()
+
     }
 
     @EventHandler

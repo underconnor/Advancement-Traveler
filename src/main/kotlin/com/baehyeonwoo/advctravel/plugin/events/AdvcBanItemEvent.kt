@@ -150,6 +150,20 @@ class AdvcBanItemEvent: Listener {
                 }
             }
         }
+        else if(damager is Egg && damager.shooter is Player){
+            if ((damager.shooter as Player).uniqueId.toString() !in runner && (damager.shooter as Player).uniqueId.toString() !in administrator) {
+                if(entity.type == EntityType.ENDER_CRYSTAL){
+                    e.isCancelled = true
+                }
+            }
+        }
+        else if(damager is Snowball && damager.shooter is Player){
+            if ((damager.shooter as Player).uniqueId.toString() !in runner && (damager.shooter as Player).uniqueId.toString() !in administrator) {
+                if(entity.type == EntityType.ENDER_CRYSTAL){
+                    e.isCancelled = true
+                }
+            }
+        }
     }
 
     @EventHandler
@@ -175,10 +189,7 @@ class AdvcBanItemEvent: Listener {
 
     @EventHandler
     fun onDispenseEvent(e: BlockDispenseEvent){
-        val i = e.item
-        if(i.type == Material.LAVA_BUCKET){
-            e.isCancelled = true
-        }
+        e.isCancelled = true
     }
 
 }
