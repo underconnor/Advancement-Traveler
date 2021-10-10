@@ -58,10 +58,10 @@ class AdvcTravelEvent : Listener {
     private val adminTeam = server.scoreboardManager.mainScoreboard.getTeam("Admin")
 
     private fun randomTeleport(player: Player) {
-        val randomX = Random.nextDouble(-1000.0, 1000.0)
-        val randomZ = Random.nextDouble(-1000.0, 1000.0)
+        val randomX = Random.nextInt(-1000, 1000)
+        val randomZ = Random.nextInt(-1000, 1000)
 
-        player.teleport(player.location.set(randomX, player.world.getHighestBlockYAt(randomX.toInt(), randomZ.toInt()).toDouble(), randomZ))
+        player.teleport(player.location.set(randomX.toDouble(), player.world.getHighestBlockYAt(randomX, randomZ).toDouble() + 1, randomZ.toDouble()))
     }
 
     private fun teamMsgTask(player: Player, messageContent: String) {
