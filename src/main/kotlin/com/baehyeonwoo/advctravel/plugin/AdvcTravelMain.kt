@@ -73,7 +73,7 @@ class AdvcTravelMain : JavaPlugin() {
         val sc = sm.mainScoreboard
 
         val health = sc.getObjective("Health")
-        if (health == null) sc.registerNewObjective("Health", "heatlh", text("♥", NamedTextColor.RED))
+        if (health == null) sc.registerNewObjective("Health", "health", text("♥", NamedTextColor.RED))
 
         health?.displaySlot = DisplaySlot.BELOW_NAME
 
